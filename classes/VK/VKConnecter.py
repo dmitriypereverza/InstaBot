@@ -19,9 +19,3 @@ class VKConnecter():
 
     def getConnect(self):
         return self.vk
-
-    def bestWall(self, query = '', popul = 'likes:100', count = 200):
-        vk = self.getConnect()
-        q = popul + " " + query
-        values = {'q': q, 'count': count}
-        return vk.method('newsfeed.search', values)
