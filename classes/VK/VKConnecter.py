@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import vk_api
-from .constants import *
-
 
 class VKConnecter():
     def __init__(self, login, password, token = None):
@@ -14,7 +12,7 @@ class VKConnecter():
 
     def connect(self):
         try:
-            return vk_api.VkApi(self.login, self.password)  # Авторизируемся
+            return vk_api.VkApi(self.login, self.password, token = self.token)  # Авторизируемся
         except vk_api.authorization_error as error_msg:
             print(error_msg)
             # TODO Log it

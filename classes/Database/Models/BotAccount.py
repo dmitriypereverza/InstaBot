@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from Database.DBConnector import *
+from classes.Database.DBConnector import *
 
 
 class BotAccount(Model):
