@@ -6,15 +6,15 @@ from .constants import *
 
 
 class VKConnecter():
-    def __init__(self):
-        self.login = VK_LOGIN
-        self.password = VK_PASSWORD
-        self.token = VK_TOKEN
+    def __init__(self, login, password, token = None):
+        self.login = login
+        self.password = password
+        self.token = token
         self.vk = self.connect()
 
     def connect(self):
         try:
-            return vk_api.VkApi(self.login, self.password, token=self.token)  # Авторизируемся
+            return vk_api.VkApi(self.login, self.password)  # Авторизируемся
         except vk_api.authorization_error as error_msg:
             print(error_msg)
             # TODO Log it
