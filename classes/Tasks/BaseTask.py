@@ -26,6 +26,12 @@ class BaseTask:
     def setDelay(self, delay_from, delay_to):
         self.delay = [delay_from, delay_to]
 
+    def isDelayExpired(self) -> bool:
+        return self.next_exec <= time.time()
+
+    def isLimitExpired(self) -> bool:
+        return False
+
     def setNextExec(self):
         currentDelay = random.randint(self.delay[0], self.delay[1])
         print(self.__class__.__name__ + ' Wait: ' + str(currentDelay))
@@ -34,8 +40,11 @@ class BaseTask:
     def setUsersList(self, list):
         self.users_list = list
 
-    @abc.abstractmethod
     def exec(self):
+        vk_api = self.vk.getConnect()
+        if self.isDelayExpired() and not self.isLimitExpired():
+            self.runTask(vk_api)
+
+    @abc.abstractmethod
+    def runTask(self, vk_api):
         pass
-
-
