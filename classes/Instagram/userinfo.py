@@ -15,13 +15,19 @@ class User:
         self.s.headers.update({'User-Agent': self.user_agent})
 
         userInfo = self.get_user_info_by_login(userLogin)
+
+        print(userInfo)
+
         self.id = userInfo['id']
         self.username = userInfo['username']
         self.followsCount = userInfo['follows']['count']
         self.followed_by = userInfo['followed_by']['count']
         self.fullName = userInfo['full_name']
-        self.mediaCount = len(userInfo['media'])
+        self.mediaCount = len(userInfo['media']['nodes'])
         self.biography = userInfo['biography']
+
+        self.isFollower = userInfo['follows_viewer'] or userInfo['has_requested_viewer']
+        self.isFollowing = userInfo['followed_by_viewer'] or userInfo['requested_by_viewer']
 
     def get_user_info_by_login(self, user_name):
         url_info = self.url_user_info % user_name

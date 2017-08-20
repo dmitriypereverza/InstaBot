@@ -8,14 +8,13 @@ from  classes.Instagram.instaConnect import InstaBot
 
 class BaseTask:
     def __init__(self, insta):
-        """
-        :type insta: InstaBot
-        """
+        """:type insta: InstaBot"""
         self.insta = insta
         self.users_list = []
         self.next_exec = []
         self.delay = [0, 0]
         self.limit = 30
+        self.currentIndex = 0
         self.next_exec = time.time()
 
     def exec(self):
