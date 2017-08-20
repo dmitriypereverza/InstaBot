@@ -4,14 +4,14 @@
 from classes.Tasks.BaseTask import BaseTask
 
 class AddFriend(BaseTask):
-    def __init__(self, vk):
-        super().__init__(vk)
+    def __init__(self, insta):
+        super().__init__(insta)
         self.delay = [5, 20]
 
-    def runTask(self, vk_api):
-        self.users_list = ['41244707']
+    def runTask(self):
 
-        # response = vk_api.method('friends.add', {'user_id': self.users_list[0]})
+        for user in self.users_list:
+            self.insta.follow(user.id)
         response = 200
         if 174 <= response <= 177:
             raise Exception('Ошибка добавления в друзья')

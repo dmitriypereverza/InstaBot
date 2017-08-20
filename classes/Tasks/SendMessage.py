@@ -5,11 +5,11 @@ from classes.TextGenerator.MsgGenerator import MsgGenerator
 from classes.Tasks.BaseTask import BaseTask
 
 class SendMessage(BaseTask):
-    def __init__(self, vk):
-        super().__init__(vk)
+    def __init__(self, insta):
+        super().__init__(insta)
         self.delay = [5, 20]
 
-    def runTask(self, vk_api):
+    def runTask(self):
         self.users_list = ['41244707']
 
         msgGen = MsgGenerator()
