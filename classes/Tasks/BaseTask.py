@@ -10,7 +10,7 @@ class BaseTask:
     def __init__(self, insta):
         """:type insta: InstaBot"""
         self.insta = insta
-        self.users_list = []
+        self.usersList = []
         self.next_exec = []
         self.delay = [0, 0]
         self.limit = 30
@@ -51,5 +51,5 @@ class BaseTask:
         self.next_exec = time.time() + currentDelay
 
     def setUsersList(self, users):
-        self.users_list = users
+        self.usersList = users
         return self
