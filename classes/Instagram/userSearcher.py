@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from classes.Instagram.instaConnect import InstaBot
-from classes.Instagram.userinfo import User
-
 
 class UserSearcher:
     """:type instaConnect: InstaBot"""

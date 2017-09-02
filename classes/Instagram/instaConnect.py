@@ -13,6 +13,7 @@ if 'threading' in sys.modules:
 import time
 import requests
 from classes.Instagram.userinfo import User
+from classes.Log.LogClass import Logger
 
 
 class InstaBot:
@@ -335,10 +336,7 @@ class InstaBot:
             try:
                 follow = self.s.post(url_follow)
                 if follow.status_code == 200:
-                    self.follow_counter += 1
-                    log_string = "Followed: %s #%i." % (user_id,
-                                                        self.follow_counter)
-                    self.write_log(log_string)
+                    Logger.log("Followed: %s." % user_id)
                 return follow
             except:
                 self.write_log("Except on follow!")

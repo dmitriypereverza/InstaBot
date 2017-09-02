@@ -9,6 +9,7 @@ from  classes.Instagram.instaConnect import InstaBot
 class BaseTask:
     def __init__(self, insta):
         """:type insta: InstaBot"""
+        self.tagsList = []
         self.insta = insta
         self.usersList = []
         self.next_exec = []
@@ -52,4 +53,8 @@ class BaseTask:
 
     def setUsersList(self, users):
         self.usersList = users
+        return self
+
+    def setTagsList(self, tags):
+        self.tagsList = tags
         return self
