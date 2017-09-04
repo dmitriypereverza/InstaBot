@@ -24,8 +24,15 @@ class UserSearcher:
             userName = mediaInfo['shortcode_media']['owner']['username']
             if userName not in userNames:
                 userNames.append(userName)
-
         return userNames
 
+    def getFollowersByUser(self, username, limit):
+        user = self.instaConnect.getUserBylogin(username)
+        userNames = []
+        for follower in self.instaConnect.getUserFollowersByUserId(user.id, limit):
+            userName = follower['node']['username']
+            if userName not in userNames:
+                userNames.append(userName)
+        return userNames
 
 

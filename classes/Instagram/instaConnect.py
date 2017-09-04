@@ -24,6 +24,8 @@ class InstaBot:
     url_unlike = 'https://www.instagram.com/web/likes/%s/unlike/'
     url_comment = 'https://www.instagram.com/web/comments/%s/add/'
     url_follow = 'https://www.instagram.com/web/friendships/%s/follow/'
+    url_followers = 'https://www.instagram.com/graphql/query/?query_id=17851374694183129&id=%s&first=%d'
+    url_following = 'https://www.instagram.com/graphql/query/?query_id=17874545323001329&id=%s&first=%d'
     url_unfollow = 'https://www.instagram.com/web/friendships/%s/unfollow/'
     url_login = 'https://www.instagram.com/accounts/login/ajax/'
     url_logout = 'https://www.instagram.com/accounts/logout/'
@@ -289,6 +291,19 @@ class InstaBot:
                     return None
             else:
                 self.write_log("Not connect!")
+
+    def getUserFollowersByUserId(self, userId, limit):
+        if self.login_status:
+            url_followers = self.url_followers % (userId, limit)
+            try:
+                followers = self.s.post(url_followers)
+                if followers.status_code == 200:
+                    Logger.log("Get followers from : %s." % userId)
+                    response = json.loads(followers.text)
+                    return response['data']['user']['edge_followed_by']['edges']
+            except:
+                self.write_log("Except on get followers!")
+        return False
 
     def like(self, media_id):
         """ Send http request to like media by ID """

@@ -20,7 +20,7 @@ class TraditionalFollowing(BaseTask):
     def runTask(self):
         if not self.usersList:
             nextTag = self.getNextTag()
-            self.usersList = self.getUsersByTag(nextTag)
+            self.usersList = self.getUsersFollowers('wwhfz')
             Logger.log('Count user by tag ' + nextTag + ': ' + str(len(self.usersList)))
 
         currentUser = self.getNextUser()
@@ -34,7 +34,7 @@ class TraditionalFollowing(BaseTask):
                 self.insta.like(mediaId)
                 sleep(7)
 
-            self.insta.follow(currentUser.id)
+            # self.insta.follow(currentUser.id)
             self.setNextExec()
         else:
             Logger.log('Skip user #%d: %s' % (self.userIndex - 1, currentUser.username))
@@ -81,4 +81,10 @@ class TraditionalFollowing(BaseTask):
         return list(map(
             lambda x: self.insta.getUserBylogin(x),
             UserSearcher(self.insta).getUserNamesByTag(tag)
+        ))
+
+    def getUsersFollowers(self, username):
+        return list(map(
+            lambda x: self.insta.getUserBylogin(x),
+            UserSearcher(self.insta).getFollowersByUser(username, 3)
         ))
