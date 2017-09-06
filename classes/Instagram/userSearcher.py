@@ -26,7 +26,7 @@ class UserSearcher:
                 userNames.append(userName)
         return userNames
 
-    def getFollowersByUser(self, username, limit):
+    def getUserFollowers(self, username, limit):
         user = self.instaConnect.getUserBylogin(username)
         userNames = []
         for follower in self.instaConnect.getUserFollowersByUserId(user.id, limit):
@@ -35,4 +35,13 @@ class UserSearcher:
                 userNames.append(userName)
         return userNames
 
+    def getUsersByLocation(self, locationId):
+        posts = self.instaConnect.getPostsByLocationId(locationId)
+        userNames = []
+        for post in posts:
+            mediaInfo = self.instaConnect.getMediaInfoByCode(post['code'])
+            userName = mediaInfo['shortcode_media']['owner']['username']
+            if userName not in userNames:
+                userNames.append(userName)
+        return userNames
 

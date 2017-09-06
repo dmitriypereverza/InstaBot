@@ -26,6 +26,7 @@ class InstaBot:
     url_follow = 'https://www.instagram.com/web/friendships/%s/follow/'
     url_followers = 'https://www.instagram.com/graphql/query/?query_id=17851374694183129&id=%s&first=%d'
     url_following = 'https://www.instagram.com/graphql/query/?query_id=17874545323001329&id=%s&first=%d'
+    url_location_search = 'https://www.instagram.com/explore/locations/%d/?__a=1'
     url_unfollow = 'https://www.instagram.com/web/friendships/%s/unfollow/'
     url_login = 'https://www.instagram.com/accounts/login/ajax/'
     url_logout = 'https://www.instagram.com/accounts/logout/'
@@ -305,6 +306,19 @@ class InstaBot:
                 self.write_log("Except on get followers!")
         return False
 
+    def getPostsByLocationId(self, locationId):
+        if self.login_status:
+            urlLocationSearch = self.url_location_search % locationId
+            try:
+                followers = self.s.post(urlLocationSearch)
+                if followers.status_code == 200:
+                    response = json.loads(followers.text)
+                    Logger.log("Get posts from location: %s." % response['location']['name'])
+                    return response['location']['media']['nodes']
+            except:
+                self.write_log("Except on get data from location!")
+        return False
+
     def like(self, media_id):
         """ Send http request to like media by ID """
         if self.login_status:
@@ -373,79 +387,9 @@ class InstaBot:
                 self.write_log("Exept on unfollow!")
         return False
 
-    def unfollow_on_cleanup(self, user_id):
-        """ Unfollow on cleanup by @rjmayott """
-        if self.login_status:
-            url_unfollow = self.url_unfollow % (user_id)
-            try:
-                unfollow = self.s.post(url_unfollow)
-                if unfollow.status_code == 200:
-                    self.unfollow_counter += 1
-                    log_string = "Unfollow: %s #%i of %i." % (
-                        user_id, self.unfollow_counter, self.follow_counter)
-                    self.write_log(log_string)
-                else:
-                    log_string = "Slow Down - Pausing for 5 minutes so we don't get banned!"
-                    self.write_log(log_string)
-                    time.sleep(300)
-                    unfollow = self.s.post(url_unfollow)
-                    if unfollow.status_code == 200:
-                        self.unfollow_counter += 1
-                        log_string = "Unfollow: %s #%i of %i." % (
-                            user_id, self.unfollow_counter,
-                            self.follow_counter)
-                        self.write_log(log_string)
-                    else:
-                        log_string = "Still no good :( Skipping and pausing for another 5 minutes"
-                        self.write_log(log_string)
-                        time.sleep(300)
-                    return False
-                return unfollow
-            except:
-                log_string = "Except on unfollow... Looks like a network error"
-                self.write_log(log_string)
-        return False
-
-    def auto_mod(self):
-        """ Star loop, that get media ID by your tag list, and like it """
-        if self.login_status:
-            while True:
-                random.shuffle(self.tag_list)
-                self.getMediaByTag(random.choice(self.tag_list))
-                self.like_all_exist_media(random.randint \
-                                              (1, self.max_like_for_one_tag))
-
-    def new_auto_mod(self):
-        while True:
-            # ------------------- Get media_id -------------------
-            if len(self.media_by_tag) == 0:
-                self.getMediaByTag(random.choice(self.tag_list))
-                self.this_tag_like_count = 0
-                self.max_tag_like_count = random.randint(
-                    1, self.max_like_for_one_tag)
-            # ------------------- Like -------------------
-            self.new_auto_mod_like()
-            # ------------------- Follow -------------------
-            self.new_auto_mod_follow()
-            # ------------------- Unfollow -------------------
-            self.new_auto_mod_unfollow()
-            # ------------------- Comment -------------------
-            self.new_auto_mod_comments()
-            # Bot iteration in 1 sec
-            time.sleep(3)
-            # print("Tic!")
-
-    def generate_comment(self):
-        c_list = list(itertools.product(*self.comment_list))
-
-        repl = [("  ", " "), (" .", "."), (" !", "!")]
-        res = " ".join(random.choice(c_list))
-        for s, r in repl:
-            res = res.replace(s, r)
-        return res.capitalize()
 
     def check_exisiting_comment(self, media_code):
-        url_check = self.url_media_detail % (media_code)
+        url_check = self.url_media_detail % media_code
         check_comment = self.s.get(url_check)
         all_data = json.loads(check_comment.text)
         if all_data['graphql']['shortcode_media']['owner']['id'] == self.user_id:
@@ -464,30 +408,4 @@ class InstaBot:
 
     def write_log(self, log_text):
         """ Write log by print() or logger """
-        # todo replace method
-
-        if self.log_mod == 0:
-            try:
-                print(log_text)
-            except UnicodeEncodeError:
-                print("Your text has unicode problem!")
-        elif self.log_mod == 1:
-            # Create log_file if not exist.
-            if self.log_file == 0:
-                self.log_file = 1
-                now_time = datetime.datetime.now()
-                self.log_full_path = '%s%s_%s.log' % (
-                    self.log_file_path, self.user_login,
-                    now_time.strftime("%d.%m.%Y_%H:%M"))
-                formatter = logging.Formatter('%(asctime)s - %(name)s '
-                                              '- %(message)s')
-                self.logger = logging.getLogger(self.user_login)
-                self.hdrl = logging.FileHandler(self.log_full_path, mode='w')
-                self.hdrl.setFormatter(formatter)
-                self.logger.setLevel(level=logging.INFO)
-                self.logger.addHandler(self.hdrl)
-            # Log to log file.
-            try:
-                self.logger.info(log_text)
-            except UnicodeEncodeError:
-                print("Your text has unicode problem!")
+        Logger.log(log_text)

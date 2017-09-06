@@ -4,7 +4,7 @@
 class User:
     POPULAR_FOLLOWS_COUNT = 500
     FAKE_COEFICIENT = 3
-    NORMAL_COEFICIENT = 1.5
+    NORMAL_COEFICIENT = 2
     FAKE_FOLLOWED_LIMIT = 150
     BEGINNER_FOLLOWS_COUNT = 50
 
@@ -25,11 +25,11 @@ class User:
     def isFake(self):
         return self.followed_by >= self.FAKE_FOLLOWED_LIMIT and \
                self.followsCount > 0 and \
-               self.followed_by / self.followsCount > self.FAKE_COEFICIENT
+               self.followsCount / self.followed_by > self.FAKE_COEFICIENT
 
     def isNormal(self):
         return not self.isFake() and \
-               self.followsCount > 0 and \
+               self.followed_by > 0 and \
                self.followed_by / self.followsCount <= self.NORMAL_COEFICIENT
 
     def isBeginner(self):
