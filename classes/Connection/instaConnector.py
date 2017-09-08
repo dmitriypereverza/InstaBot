@@ -1,17 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import datetime
-
-from classes.Connection.request import RequestFacade
 from classes.Instagram import Endpoints
-
 
 class InstaConnect:
     csrfToken = None
     loginSuccess = False
 
-    def __init__(self):
-        self.requestManager = RequestFacade()
+    def __init__(self, requestManager):
+        self.requestManager = requestManager
 
     def login(self, login, password):
         # TODO log event

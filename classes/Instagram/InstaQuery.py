@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
 from classes.Connection.request import RequestFacade
 from classes.Instagram import Endpoints
 from classes.Log.LogClass import Logger

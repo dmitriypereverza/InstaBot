@@ -3,7 +3,6 @@
 from random import sample
 from time import sleep
 
-from classes.Instagram.userSearcher import UserSearcher
 from classes.Instagram.userinfo import User
 from classes.Log.LogClass import Logger
 from classes.Sourse.commentTemplateList import templateList
@@ -88,18 +87,18 @@ class TraditionalFollowing(BaseTask):
 
     def getUsersByTag(self, tag):
         return list(map(
-            lambda x: self.insta.getUserByName(x),
-            UserSearcher(self.insta).getUserNamesByTag(tag)
+            lambda x: User.getUserByName(x),
+            self.insta.getUserNamesByTag(tag)
         ))
 
     def getUsersFollowers(self, username):
         return list(map(
-            lambda x: self.insta.getUserByName(x),
-            UserSearcher(self.insta).getUserFollowers(username, 50)
+            lambda x: User.getUserByName(x),
+            self.insta.getUserFollowers(username, 50)
         ))
 
     def getUsersByLocation(self, locationId):
         return list(map(
-            lambda x: self.insta.getUserByName(x),
-            UserSearcher(self.insta).getUsersByLocation(locationId)
+            lambda x: User.getUserByName(x),
+            self.insta.getUsersByLocation(locationId)
         ))

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import json
-
 import requests
+from classes.Log.LogClass import Logger
 
 class RequestFacade:
     user_agent = ("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 "
@@ -33,16 +33,23 @@ class RequestFacade:
             'X-Requested-With': 'XMLHttpRequest'
         })
 
-    def get(self, url):
-        return self.session.get(url)
+    def get(self, *args, **kwargs):
+        return self.session.get(*args, **kwargs)
 
-    def headersUpdate(self, param):
-        self.session.headers.update(param)
+    def headersUpdate(self, *args, **kwargs):
+        self.session.headers.update(*args, **kwargs)
 
-    def post(self, url_login, data = None, allow_redirects = None):
-        return self.session.post(url_login, data, allow_redirects)
+    def post(self, *args, **kwargs):
+        response = self.session.post(*args, **kwargs)
+        if response.status_code == 200:
+            return response
+        Logger.error('Can\'t do post request. Status code: ' + response.status_code)
 
     def getJson(self, url):
-        return json.loads(self.get(url).text)
+        response = self.get(url)
+        if response.status_code == 200:
+            return json.loads(response.text)
+
+        Logger.error('Can\'t get json. Status code: ' + response.status_code)
 
 
