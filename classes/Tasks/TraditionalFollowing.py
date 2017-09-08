@@ -19,20 +19,24 @@ class TraditionalFollowing(BaseTask):
 
     def runTask(self):
         if not self.usersList:
-            self.usersList = self.getUsersByLocation(221038870)
+            self.usersList = self.getUsersByLocation(225196070)
+            # self.usersList = self.getUsersFollowers('fudduxujd')
+            # self.usersList = self.getUsersByTag(self.getNextTag())
 
         currentUser = self.getNextUser()
         if not currentUser:
             return None
 
-        if not currentUser.isFollower and currentUser.isNormal():
+        if currentUser.isNormal():
             Logger.log('Enter to user #%d: %s' % (self.userIndex - 1, currentUser.username))
             Logger.log('User link: ' + "https://www.instagram.com/%s/" % currentUser.username)
             for mediaId in self.getLikeListId(currentUser):
                 self.insta.like(mediaId)
                 sleep(7)
 
-            self.insta.follow(currentUser.id)
+            if not currentUser.isFollower:
+                self.insta.follow(currentUser.id)
+
             self.setNextExec()
         else:
             Logger.log('Skip user #%d: %s' % (self.userIndex - 1, currentUser.username))

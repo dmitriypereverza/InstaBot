@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import re
+from classes.Sourse.unwanted import unwanted_username_list
 
 class User:
     POPULAR_FOLLOWS_COUNT = 500
@@ -28,12 +30,18 @@ class User:
                self.followsCount / self.followed_by > self.FAKE_COEFICIENT
 
     def isNormal(self):
-        return not self.isFake() and \
+        return not self.inBlackList() and \
+               not self.isFake() and \
                self.followed_by > 0 and \
                self.followed_by / self.followsCount <= self.NORMAL_COEFICIENT
 
     def isBeginner(self):
         return self.followsCount < self.BEGINNER_FOLLOWS_COUNT
+
+    def inBlackList(self):
+        for x in unwanted_username_list:
+            if re.search(x, self.username):
+                return True
 
 
 
