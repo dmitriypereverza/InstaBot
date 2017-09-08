@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from classes.Instagram.instaConnect import InstaBot
+from classes.Instagram.InstaBot import InstaBot
 
 class UserSearcher:
     """:type instaConnect: InstaBot"""
@@ -27,7 +27,7 @@ class UserSearcher:
         return userNames
 
     def getUserFollowers(self, username, limit):
-        user = self.instaConnect.getUserBylogin(username)
+        user = self.instaConnect.getUserByName(username)
         userNames = []
         for follower in self.instaConnect.getUserFollowersByUserId(user.id, limit):
             userName = follower['node']['username']

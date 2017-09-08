@@ -4,7 +4,7 @@
 import abc
 import random
 import time
-from  classes.Instagram.instaConnect import InstaBot
+from  classes.Instagram.InstaBot import InstaBot
 
 class BaseTask:
     def __init__(self, insta):

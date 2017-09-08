@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import re
+
+from classes.Instagram import InstaQuery
 from classes.Sourse.unwanted import unwanted_username_list
 
 class User:
@@ -32,7 +34,7 @@ class User:
     def isNormal(self):
         return not self.inBlackList() and \
                not self.isFake() and \
-               self.followed_by > 0 and \
+               self.followsCount > 0 and \
                self.followed_by / self.followsCount <= self.NORMAL_COEFICIENT
 
     def isBeginner(self):
@@ -42,6 +44,10 @@ class User:
         for x in unwanted_username_list:
             if re.search(x, self.username):
                 return True
+
+    @classmethod
+    def getUserByName(cls, login):
+        return cls(InstaQuery.getUserInfoByLogin(login))
 
 
 

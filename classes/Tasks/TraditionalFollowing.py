@@ -6,8 +6,9 @@ from time import sleep
 from classes.Instagram.userSearcher import UserSearcher
 from classes.Instagram.userinfo import User
 from classes.Log.LogClass import Logger
+from classes.Sourse.commentTemplateList import templateList
 from classes.Tasks.BaseTask import BaseTask
-
+from classes.TextGenerator.MsgGenerator import MsgGenerator
 
 class TraditionalFollowing(BaseTask):
     def __init__(self, insta):
@@ -19,9 +20,9 @@ class TraditionalFollowing(BaseTask):
 
     def runTask(self):
         if not self.usersList:
-            self.usersList = self.getUsersByLocation(225196070)
+            # self.usersList = self.getUsersByLocation(225196070)
             # self.usersList = self.getUsersFollowers('fudduxujd')
-            # self.usersList = self.getUsersByTag(self.getNextTag())
+            self.usersList = self.getUsersByTag(self.getNextTag())
 
         currentUser = self.getNextUser()
         if not currentUser:
@@ -36,6 +37,7 @@ class TraditionalFollowing(BaseTask):
 
             if not currentUser.isFollower:
                 self.insta.follow(currentUser.id)
+                self.writeComment(currentUser)
 
             self.setNextExec()
         else:
@@ -43,6 +45,11 @@ class TraditionalFollowing(BaseTask):
             Logger.log('User link: ' + "https://www.instagram.com/%s/" % currentUser.username)
 
         Logger.log('\n')
+
+    def writeComment(self, currentUser):
+        comment = MsgGenerator(templateList).generate()
+        Logger.log('Comment: %s' % comment)
+        self.insta.comment(currentUser.media[0]['id'], comment)
 
     def getLikeListId(self, currentUser):
         countMedia = len(currentUser.media)
@@ -81,18 +88,18 @@ class TraditionalFollowing(BaseTask):
 
     def getUsersByTag(self, tag):
         return list(map(
-            lambda x: self.insta.getUserBylogin(x),
+            lambda x: self.insta.getUserByName(x),
             UserSearcher(self.insta).getUserNamesByTag(tag)
         ))
 
     def getUsersFollowers(self, username):
         return list(map(
-            lambda x: self.insta.getUserBylogin(x),
+            lambda x: self.insta.getUserByName(x),
             UserSearcher(self.insta).getUserFollowers(username, 50)
         ))
 
     def getUsersByLocation(self, locationId):
         return list(map(
-            lambda x: self.insta.getUserBylogin(x),
+            lambda x: self.insta.getUserByName(x),
             UserSearcher(self.insta).getUsersByLocation(locationId)
         ))

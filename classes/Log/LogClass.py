@@ -4,3 +4,7 @@
 class Logger:
     def log(text):
         print(text)
+
+    @classmethod
+    def error(cls, text):
+        print(text)
