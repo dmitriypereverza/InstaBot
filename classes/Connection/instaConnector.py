@@ -15,7 +15,7 @@ class InstaConnect:
         self.requestManager.headersUpdate({'X-CSRFToken': context.cookies['csrftoken']})
 
         loginConnect = self.requestManager.post(
-            Endpoints.url_login,
+            Endpoints.urlLogin,
             data = {
                 'username': login,
                 'password': password
@@ -35,7 +35,7 @@ class InstaConnect:
     def logout(self):
         try:
             logoutPost = {'csrfmiddlewaretoken': self.csrfToken}
-            self.requestManager.post(Endpoints.url_logout, data = logoutPost)
+            self.requestManager.post(Endpoints.urlLogout, data = logoutPost)
             self.loginSuccess = False
         except:
             print("Logout error!")

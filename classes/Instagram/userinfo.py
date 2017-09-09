@@ -11,6 +11,8 @@ FAKE_FOLLOWED_LIMIT = 150
 BEGINNER_FOLLOWS_COUNT = 50
 
 class User:
+    __slots__ = ["id", "username", "followsCount", "followed_by", "fullName", "media", "biography", "isFollower", "isFollowing"]
+
     def __init__(self, userInfo):
         self.id = userInfo['id']
         self.username = userInfo['username']

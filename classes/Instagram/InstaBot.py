@@ -42,23 +42,23 @@ class InstaBot:
 
     @checkConnectAndLogged
     def getPostsByLocationId(self, locationId):
-        urlLocationSearch = Endpoints.url_location_search % locationId
+        urlLocationSearch = Endpoints.urlLocationSearch % locationId
         response = self.requestManager.getJson(urlLocationSearch)
         return response['location']['media']['nodes']
 
     @checkConnectAndLogged
     def like(self, media_id):
-        urlLikes = Endpoints.url_likes % media_id
+        urlLikes = Endpoints.urlLikes % media_id
         return self.requestManager.post(urlLikes)
 
     @checkConnectAndLogged
     def unlike(self, media_id):
-        urlUnlike = Endpoints.url_unlike % media_id
+        urlUnlike = Endpoints.urlUnlike % media_id
         return self.requestManager.post(urlUnlike)
 
     @checkConnectAndLogged
     def comment(self, media_id, comment_text):
-        urlComment = Endpoints.url_comment % media_id
+        urlComment = Endpoints.urlComment % media_id
         return self.requestManager.post(
             urlComment,
             data = {'comment_text': comment_text}
@@ -66,22 +66,22 @@ class InstaBot:
 
     @checkConnectAndLogged
     def follow(self, user_id):
-        urlFollow = Endpoints.url_follow % user_id
+        urlFollow = Endpoints.urlFollow % user_id
         return self.requestManager.post(urlFollow)
 
     @checkConnectAndLogged
     def unfollow(self, userId):
-        urlUnfollow = Endpoints.url_unfollow % userId
+        urlUnfollow = Endpoints.urlUnfollow % userId
         return self.requestManager.post(urlUnfollow)
 
     @checkConnectAndLogged
     def getMediaByTag(self, tag):
-        all_data = self.requestManager.getJson(Endpoints.url_tag % tag)
+        all_data = self.requestManager.getJson(Endpoints.urlTag % tag)
         return all_data['tag']['media']['nodes']
 
     @checkConnectAndLogged
     def getUserFollowersByUserId(self, userId, limit):
-        urlFollowers = Endpoints.url_followers % (userId, limit)
+        urlFollowers = Endpoints.urlFollowers % (userId, limit)
         response = self.requestManager.getJson(urlFollowers)
         return response['data']['user']['edge_followed_by']['edges']
 

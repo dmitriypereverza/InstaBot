@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+from itertools import cycle
 from random import sample
 from time import sleep
 
@@ -16,6 +17,7 @@ class TraditionalFollowing(BaseTask):
         self.tagIndex = 0
         self.userIndex = 0
         self.tagPostIndex = 0
+        self.tagsGenerator = None
 
     def runTask(self):
         if not self.usersList:
@@ -69,12 +71,8 @@ class TraditionalFollowing(BaseTask):
         return likeListId
 
     def getNextTag(self):
-        if len(self.tagsList) - 1 < self.tagIndex:
-            self.tagIndex = 0
-
-        tagNext = self.tagsList[self.tagIndex]
-        self.tagIndex += 1
-        return tagNext
+        self.tagsGenerator = cycle(self.tagsList) if not self.tagsGenerator else self.tagsGenerator
+        return next(self.tagsGenerator)
 
     def getNextUser(self) -> User:
         userNext = None
