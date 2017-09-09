@@ -1,9 +1,4 @@
 .idea
 /people.db
 /run.py
-classes/Bot/__pycache__/
-classes/Instagram/__pycache__/
-classes/Log/__pycache__/
-classes/Sourse/__pycache__/
-classes/Tasks/__pycache__/
-classes/TextGenerator/__pycache__/
+**/__pycache__/
