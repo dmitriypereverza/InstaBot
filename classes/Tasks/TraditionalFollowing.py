@@ -4,7 +4,7 @@ from itertools import cycle
 from random import sample
 from time import sleep
 
-from classes.Instagram.userinfo import User
+from classes.Instagram.instaUser import User
 from classes.Log.LogClass import Logger
 from classes.Sourse.commentTemplateList import templateList
 from classes.Tasks.BaseTask import BaseTask

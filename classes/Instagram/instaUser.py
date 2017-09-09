@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import re
+from collections import namedtuple
 from classes.Instagram import InstaQuery
 from classes.Sourse.unwanted import unwanted_username_list
 
@@ -10,19 +11,42 @@ NORMAL_COEFICIENT = 2
 FAKE_FOLLOWED_LIMIT = 150
 BEGINNER_FOLLOWS_COUNT = 50
 
-class User:
-    __slots__ = ["id", "username", "followsCount", "followed_by", "fullName", "media", "biography", "isFollower", "isFollowing"]
+class User(namedtuple('User', ["userInfo"])):
+    @property
+    def id(self):
+        return self.userInfo['id']
 
-    def __init__(self, userInfo):
-        self.id = userInfo['id']
-        self.username = userInfo['username']
-        self.followsCount = userInfo['follows']['count']
-        self.followed_by = userInfo['followed_by']['count']
-        self.fullName = userInfo['full_name']
-        self.media = userInfo['media']['nodes']
-        self.biography = userInfo['biography']
-        self.isFollower = userInfo['follows_viewer'] or userInfo['has_requested_viewer']
-        self.isFollowing = userInfo['followed_by_viewer'] or userInfo['requested_by_viewer']
+    @property
+    def username(self):
+        return self.userInfo['username']
+
+    @property
+    def followsCount(self):
+        return self.userInfo['follows']['count']
+
+    @property
+    def followed_by(self):
+        return self.userInfo['followed_by']['count']
+
+    @property
+    def fullName(self):
+        return self.userInfo['full_name']
+
+    @property
+    def media(self):
+        return self.userInfo['media']['nodes']
+
+    @property
+    def biography(self):
+        return self.userInfo['biography']
+
+    @property
+    def isFollower(self):
+        return self.userInfo['follows_viewer'] or self.userInfo['has_requested_viewer']
+
+    @property
+    def isFollowing(self):
+        return self.userInfo['followed_by_viewer'] or self.userInfo['requested_by_viewer']
 
     def isPopular(self):
         return self.followsCount > POPULAR_FOLLOWS_COUNT
@@ -49,6 +73,3 @@ class User:
     @classmethod
     def getUserByName(cls, login):
         return cls(InstaQuery.getUserInfoByLogin(login))
-
-
-

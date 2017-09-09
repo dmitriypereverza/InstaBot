@@ -5,7 +5,7 @@ import functools
 from classes.Connection.instaConnector import InstaConnect
 from classes.Connection.request import RequestFacade
 from classes.Instagram import Endpoints, InstaQuery
-from classes.Instagram.userinfo import User
+from classes.Instagram.instaUser import User
 from classes.Log.LogClass import Logger
 
 def checkConnectAndLogged(func):
