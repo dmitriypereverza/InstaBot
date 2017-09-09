@@ -1,18 +1,22 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+import sys
 
 class Logger:
     def log(text):
         print(text)
 
     def error(text):
-        print(bcolors.FAIL + text + bcolors.ENDC)
+        sys.stderr.write(bcolors.FAIL + text + bcolors.ENDC + '\n')
 
     def sucess(text):
-        print(bcolors.OKBLUE + text + bcolors.ENDC)
+        print(bcolors.OKBLUE + text + bcolors.ENDC + '\n')
 
     def warning(text):
-        print(bcolors.WARNING + text + bcolors.ENDC)
+        print(bcolors.WARNING + text + bcolors.ENDC + '\n')
+
+    def loadingText(text):
+        sys.stdout.write('\r' + text)
 
 class bcolors:
     HEADER = '\033[95m'

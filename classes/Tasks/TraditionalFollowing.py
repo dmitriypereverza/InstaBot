@@ -30,7 +30,8 @@ class TraditionalFollowing(BaseTask):
         if currentUser.isNormal():
             Logger.log('Enter to user #%d: %s' % (self.userIndex - 1, currentUser.username))
             Logger.log('User link: ' + "https://www.instagram.com/%s/" % currentUser.username)
-            for mediaId in self.getLikeListId(currentUser):
+            likeList = self.getLikeListId(currentUser)
+            for mediaId in likeList:
                 self.insta.like(mediaId)
                 sleep(7)
 

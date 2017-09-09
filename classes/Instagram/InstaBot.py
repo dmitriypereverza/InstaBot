@@ -1,11 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
+import functools
 from classes.Connection.instaConnector import InstaConnect
 from classes.Connection.request import RequestFacade
 from classes.Instagram import Endpoints, InstaQuery
 from classes.Instagram.userinfo import User
 from classes.Log.LogClass import Logger
+
+def checkConnectAndLogged(func):
+    @functools.wraps(func)
+    def inner(self, *args, **kwargs):
+        if self.instaConnector.isConnected():
+            Logger.log("Exect {}() with params: {} {}.".format(func.__name__, args, kwargs))
+            try:
+                result = func(self, *args, **kwargs)
+                return result
+            except:
+                Logger.error("Except on get data from {}!".format(func.__name__))
+        else:
+            Logger.error("Not connect!")
+    return inner
 
 class InstaBot:
     ownerAccount = None
@@ -25,87 +40,50 @@ class InstaBot:
     def logout(self):
         self.instaConnector.logout()
 
+    @checkConnectAndLogged
     def getPostsByLocationId(self, locationId):
-        if self.instaConnector.isConnected():
-            urlLocationSearch = Endpoints.url_location_search % locationId
-            Logger.log("Get posts from locationId: %s." % locationId)
-            try:
-                response = self.requestManager.getJson(urlLocationSearch)
-                return response['location']['media']['nodes']
-            except:
-                Logger.error("Except on get data from location!")
-        Logger.error("Not connect!")
+        urlLocationSearch = Endpoints.url_location_search % locationId
+        response = self.requestManager.getJson(urlLocationSearch)
+        return response['location']['media']['nodes']
 
+    @checkConnectAndLogged
     def like(self, media_id):
-        if self.instaConnector.isConnected():
-            urlLikes = Endpoints.url_likes % media_id
-            try:
-                return self.requestManager.post(urlLikes)
-            except:
-                Logger.error("Except on like!")
-        Logger.error("Not connect!")
+        urlLikes = Endpoints.url_likes % media_id
+        return self.requestManager.post(urlLikes)
 
+    @checkConnectAndLogged
     def unlike(self, media_id):
-        if self.instaConnector.isConnected():
-            urlUnlike = Endpoints.url_unlike % media_id
-            try:
-                response = self.requestManager.post(urlUnlike)
-            except:
-                Logger.error("Except on unlike!")
-        Logger.error("Not connect!")
+        urlUnlike = Endpoints.url_unlike % media_id
+        return self.requestManager.post(urlUnlike)
 
+    @checkConnectAndLogged
     def comment(self, media_id, comment_text):
-        if self.instaConnector.isConnected():
-            urlComment = Endpoints.url_comment % media_id
-            try:
-                return self.requestManager.post(
-                    urlComment,
-                    data = {'comment_text': comment_text}
-                )
-            except:
-                Logger.error("Except on comment!")
-        Logger.error("Not connect!")
+        urlComment = Endpoints.url_comment % media_id
+        return self.requestManager.post(
+            urlComment,
+            data = {'comment_text': comment_text}
+        )
 
+    @checkConnectAndLogged
     def follow(self, user_id):
-        if self.instaConnector.isConnected():
-            urlFollow = Endpoints.url_follow % user_id
-            try:
-                return self.requestManager.post(urlFollow)
-            except:
-                Logger.error("Except on follow!")
-        Logger.error("Not connect!")
+        urlFollow = Endpoints.url_follow % user_id
+        return self.requestManager.post(urlFollow)
 
+    @checkConnectAndLogged
     def unfollow(self, userId):
-        if self.instaConnector.isConnected():
-            urlUnfollow = Endpoints.url_unfollow % userId
-            try:
-                return self.requestManager.post(urlUnfollow)
-            except:
-                Logger.error("Exept on unfollow!")
-        Logger.error("Not connect!")
+        urlUnfollow = Endpoints.url_unfollow % userId
+        return self.requestManager.post(urlUnfollow)
 
+    @checkConnectAndLogged
     def getMediaByTag(self, tag):
-        if self.instaConnector.isConnected():
-            Logger.log("Get media by tag: %s" % tag)
-            try:
-                all_data = self.requestManager.getJson(Endpoints.url_tag % tag)
-                return all_data['tag']['media']['nodes']
-            except:
-                Logger.error("Except on get_media!")
-                return None
-        else:
-            Logger.error("Not connect!")
+        all_data = self.requestManager.getJson(Endpoints.url_tag % tag)
+        return all_data['tag']['media']['nodes']
 
+    @checkConnectAndLogged
     def getUserFollowersByUserId(self, userId, limit):
-        if self.instaConnector.isConnected():
-            urlFollowers = Endpoints.url_followers % (userId, limit)
-            Logger.log("Get followers from : %s." % userId)
-            try:
-                response = self.requestManager.getJson(urlFollowers)
-                return response['data']['user']['edge_followed_by']['edges']
-            except:
-                Logger.error("Except on get followers!")
-        Logger.error("Not connect!")
+        urlFollowers = Endpoints.url_followers % (userId, limit)
+        response = self.requestManager.getJson(urlFollowers)
+        return response['data']['user']['edge_followed_by']['edges']
 
     def getUsersByTags(self, tags):
         userList = []
@@ -140,4 +118,3 @@ class InstaBot:
             if userName not in userNames:
                 userNames.append(userName)
         return userNames
-

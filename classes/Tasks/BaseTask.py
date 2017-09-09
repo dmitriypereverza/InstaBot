@@ -5,6 +5,7 @@ import abc
 import random
 import time
 from  classes.Instagram.InstaBot import InstaBot
+from classes.Log.LogClass import Logger
 
 class BaseTask:
     def __init__(self, insta):
@@ -21,6 +22,9 @@ class BaseTask:
     def exec(self):
         if self.isDelayExpired() and not self.isLimitExpired():
             self.runTask()
+        else:
+            time.sleep(1)
+            Logger.loadingText('Осталось {} секунд'.format(round(self.getTimeLeft(), 0)))
 
     @abc.abstractmethod
     def runTask(self):
@@ -45,6 +49,9 @@ class BaseTask:
 
     def isLimitExpired(self) -> bool:
         return False
+
+    def getTimeLeft(self):
+        return self.next_exec - time.time()
 
     def setNextExec(self):
         currentDelay = random.randint(self.delay[0], self.delay[1])
