@@ -1,4 +1,4 @@
 .idea
 /people.db
-**/__pycache__/
 /run.py
+**/__pycache__/
