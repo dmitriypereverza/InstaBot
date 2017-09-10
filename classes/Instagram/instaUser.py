@@ -11,42 +11,19 @@ NORMAL_COEFICIENT = 2
 FAKE_FOLLOWED_LIMIT = 150
 BEGINNER_FOLLOWS_COUNT = 50
 
-class User(namedtuple('User', ["userInfo"])):
-    @property
-    def id(self):
-        return self.userInfo['id']
-
-    @property
-    def username(self):
-        return self.userInfo['username']
-
-    @property
-    def followsCount(self):
-        return self.userInfo['follows']['count']
-
-    @property
-    def followed_by(self):
-        return self.userInfo['followed_by']['count']
-
-    @property
-    def fullName(self):
-        return self.userInfo['full_name']
-
-    @property
-    def media(self):
-        return self.userInfo['media']['nodes']
-
-    @property
-    def biography(self):
-        return self.userInfo['biography']
-
-    @property
-    def isFollower(self):
-        return self.userInfo['follows_viewer'] or self.userInfo['has_requested_viewer']
-
-    @property
-    def isFollowing(self):
-        return self.userInfo['followed_by_viewer'] or self.userInfo['requested_by_viewer']
+class User(namedtuple('User', ("id", "username", "followsCount", "followed_by", "fullName", "media", "biography", "isFollower", "isFollowing"))):
+    def __new__(cls, userInfo):
+        return super().__new__(cls,
+            id = userInfo['id'],
+            username = userInfo['username'],
+            followsCount = userInfo['follows']['count'],
+            followed_by = userInfo['followed_by']['count'],
+            fullName = userInfo['full_name'],
+            media = userInfo['media']['nodes'],
+            biography = userInfo['biography'],
+            isFollower = userInfo['follows_viewer'] or userInfo['has_requested_viewer'],
+            isFollowing = userInfo['followed_by_viewer'] or userInfo['requested_by_viewer'],
+        )
 
     def isPopular(self):
         return self.followsCount > POPULAR_FOLLOWS_COUNT
