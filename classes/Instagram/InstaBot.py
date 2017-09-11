@@ -35,7 +35,7 @@ class InstaBot:
     def login(self):
         self.instaConnector.login(self.userLogin, self.userPassword)
         if self.instaConnector.isConnected():
-            self.ownerAccount = User.getUserByName(self.userLogin)
+            self.ownerAccount = User(self.getUserInfoByLogin(self.userLogin))
 
     def logout(self):
         self.instaConnector.logout()
@@ -85,6 +85,9 @@ class InstaBot:
         response = self.requestManager.getJson(urlFollowers)
         return response['data']['user']['edge_followed_by']['edges']
 
+    def getUserInfoByLogin(self, userName):
+        return self.requestManager.getJson(Endpoints.urlUserInfo % userName)['user']
+
     def getUsersByTags(self, tags):
         userList = []
         for tag in tags:
@@ -101,7 +104,7 @@ class InstaBot:
         return userNames
 
     def getUserFollowers(self, username, limit):
-        user = User.getUserByName(username)
+        user = User(self.getUserInfoByLogin(username)),
         userNames = []
         for follower in self.getUserFollowersByUserId(user.id, limit):
             userName = follower['node']['username']

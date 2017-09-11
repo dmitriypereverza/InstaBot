@@ -50,4 +50,4 @@ class User(namedtuple('User', ("id", "username", "followsCount", "followed_by", 
 
     @classmethod
     def getUserByName(cls, login):
-        return cls(InstaQuery.getUserInfoByLogin(login))
+        return cls()

@@ -10,6 +10,3 @@ def getMediaInfoByCode(mediaCode):
         return RequestFacade().getJson(urlFollow)['graphql']
     except:
         Logger.log("Error in getMediaInfoByCode()!")
-
-def getUserInfoByLogin(userName):
-    return RequestFacade().getJson(Endpoints.urlUserInfo % userName)['user']

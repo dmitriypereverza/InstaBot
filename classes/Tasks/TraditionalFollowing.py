@@ -86,18 +86,18 @@ class TraditionalFollowing(BaseTask):
 
     def getUsersByTag(self, tag):
         return list(map(
-            lambda x: User.getUserByName(x),
+            lambda x: User(self.insta.getUserInfoByLogin(x)),
             self.insta.getUserNamesByTag(tag)
         ))
 
     def getUsersFollowers(self, username):
         return list(map(
-            lambda x: User.getUserByName(x),
+            lambda x: User(self.insta.getUserInfoByLogin(x)),
             self.insta.getUserFollowers(username, 50)
         ))
 
     def getUsersByLocation(self, locationId):
         return list(map(
-            lambda x: User.getUserByName(x),
+            lambda x: User(self.insta.getUserInfoByLogin(x)),
             self.insta.getUsersByLocation(locationId)
         ))
