@@ -12,6 +12,7 @@ FAKE_FOLLOWED_LIMIT = 150
 BEGINNER_FOLLOWS_COUNT = 50
 
 class User(namedtuple('User', ("id", "username", "followsCount", "followed_by", "fullName", "media", "biography", "isFollower", "isFollowing"))):
+
     def __new__(cls, userInfo):
         return super().__new__(cls,
             id = userInfo['id'],

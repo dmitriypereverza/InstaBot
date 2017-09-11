@@ -6,7 +6,7 @@ from time import sleep
 
 from classes.Instagram.instaUser import User
 from classes.Log.LogClass import Logger
-from classes.Sourse.commentTemplateList import templateList
+from classes.Sourse.commentTemplateList import templateListRu
 from classes.Tasks.BaseTask import BaseTask
 from classes.TextGenerator.MsgGenerator import MsgGenerator
 
@@ -38,7 +38,7 @@ class TraditionalFollowing(BaseTask):
                 sleep(7)
 
             if not currentUser.isFollower:
-                self.insta.follow(currentUser.id)
+                # self.insta.follow(currentUser.id)
                 self.writeComment(currentUser)
 
             self.setNextExec()
@@ -49,7 +49,7 @@ class TraditionalFollowing(BaseTask):
         Logger.log('\n')
 
     def writeComment(self, currentUser):
-        comment = MsgGenerator(templateList).generate()
+        comment = MsgGenerator(templateListRu).generate()
         Logger.log('Comment: %s' % comment)
         self.insta.comment(currentUser.media[0]['id'], comment)
 
