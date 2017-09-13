@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
+import time
 import functools
 from classes.Connection.instaConnector import InstaConnect
 from classes.Connection.request import RequestFacade
@@ -12,14 +13,29 @@ def checkConnectAndLogged(func):
     @functools.wraps(func)
     def inner(self, *args, **kwargs):
         if self.instaConnector.isConnected():
-            Logger.log("Exect {}() with params: {} {}.".format(func.__name__, args, kwargs))
+            Logger.log("Try to exect {}() with params: {} {}.".format(func.__name__, args, kwargs))
             try:
-                result = func(self, *args, **kwargs)
-                return result
-            except:
-                Logger.error("Except on get data from {}!".format(func.__name__))
+                return func(self, *args, **kwargs)
+            except Exception as e:
+                Logger.error("Exception: {}; On get data from {}!".format(e, func.__name__))
         else:
             Logger.error("Not connect!")
+    return inner
+
+def checkBan(func=None, *, minuteCount=60):
+    if func is None:
+        return lambda func: checkBan(func, minuteCount=minuteCount)
+
+    @functools.wraps(func)
+    def inner(self, *args, **kwargs):
+        if not hasattr(func, 'nextExec') or func.nextExec < time.time():
+            response = func(self, *args, **kwargs)
+            if response.status_code == 400:
+                func.nextExec = time.time() + (60 * minuteCount)
+                Logger.error("Probably ban. Wait {} minute!".format(minuteCount))
+                return None
+            return response
+        Logger.error("Expiring ban time. Wait {} minute!".format((func.nextExec - time.time()) // 60))
     return inner
 
 class InstaBot:
@@ -47,6 +63,7 @@ class InstaBot:
         return response['location']['media']['nodes']
 
     @checkConnectAndLogged
+    @checkBan(minuteCount=30)
     def like(self, media_id):
         urlLikes = Endpoints.urlLikes % media_id
         return self.requestManager.post(urlLikes)
@@ -57,14 +74,16 @@ class InstaBot:
         return self.requestManager.post(urlUnlike)
 
     @checkConnectAndLogged
-    def comment(self, media_id, comment_text):
-        urlComment = Endpoints.urlComment % media_id
+    @checkBan
+    def comment(self, media_id, commentText):
+        urlComment = Endpoints.urlComment.format(media_id)
         return self.requestManager.post(
             urlComment,
-            data = {'comment_text': comment_text}
+            data = {'comment_text': str(commentText)}
         )
 
     @checkConnectAndLogged
+    @checkBan(minuteCount=30)
     def follow(self, user_id):
         urlFollow = Endpoints.urlFollow % user_id
         return self.requestManager.post(urlFollow)
@@ -98,9 +117,10 @@ class InstaBot:
         userNames = []
         for media in self.getMediaByTag(tag):
             mediaInfo = InstaQuery.getMediaInfoByCode(media['code'])
-            userName = mediaInfo['shortcode_media']['owner']['username']
-            if userName not in userNames:
-                userNames.append(userName)
+            if mediaInfo is not None:
+                userName = mediaInfo['shortcode_media']['owner']['username']
+                if userName not in userNames:
+                    userNames.append(userName)
         return userNames
 
     def getUserFollowers(self, username, limit):

@@ -1,16 +1,20 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+from classes.Connection.requestHandlerMixin import RequestHandlerMixin
+from classes.Exeptions.exeptions import TypeErrorExeption
 from classes.Instagram import Endpoints
+from classes.Log.LogClass import Logger
 
 class InstaConnect:
     csrfToken = None
     loginSuccess = False
 
     def __init__(self, requestManager):
+        if not isinstance(requestManager, RequestHandlerMixin):
+            raise TypeErrorExeption('{} not is instance RequestHandlerMixin'.format(requestManager.__class__.__name__))
         self.requestManager = requestManager
 
     def login(self, login, password):
-        # TODO log event
         context = self.requestManager.get(Endpoints.url)
         self.requestManager.headersUpdate({'X-CSRFToken': context.cookies['csrftoken']})
 
@@ -29,16 +33,18 @@ class InstaConnect:
             finder = r.text.find(login)
             if finder != -1:
                 self.loginSuccess = True
+                Logger.sucess("Login like {} success!".format(login))
+
         else:
-            print('Login error! Connection error!')
+            Logger.error("Incorrect login or password!")
 
     def logout(self):
         try:
             logoutPost = {'csrfmiddlewaretoken': self.csrfToken}
             self.requestManager.post(Endpoints.urlLogout, data = logoutPost)
             self.loginSuccess = False
-        except:
-            print("Logout error!")
+        except Exception as e:
+            Logger.error("Logout error! " + e)
 
     def isConnected(self):
         return self.loginSuccess

@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 import json
 import requests
+
+from classes.Connection.requestHandlerMixin import RequestHandlerMixin
 from classes.Log.LogClass import Logger
 
-class RequestFacade:
+class RequestFacade(RequestHandlerMixin):
     user_agent = ("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 "
                   "(KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36")
     accept_language = 'ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4'
@@ -34,22 +36,25 @@ class RequestFacade:
         })
 
     def get(self, *args, **kwargs):
-        return self.session.get(*args, **kwargs)
+        response = self.session.get(*args, **kwargs)
+        if response.status_code != 200:
+            Logger.error('Can\'t do get request. Status code: ' + response.status_code)
+        return response
 
     def headersUpdate(self, *args, **kwargs):
         self.session.headers.update(*args, **kwargs)
 
     def post(self, *args, **kwargs):
         response = self.session.post(*args, **kwargs)
-        if response.status_code == 200:
-            return response
-        Logger.error('Can\'t do post request. Status code: ' + response.status_code)
+        if response.status_code != 200:
+            Logger.error('Can\'t do post request. Status code: {}'.format(response.status_code))
+        return response
 
     def getJson(self, url):
         response = self.get(url)
-        if response.status_code == 200:
-            return json.loads(response.text)
+        if response.status_code != 200:
+            Logger.error('Can\'t get json. Status code: ' + response.status_code)
+        return json.loads(response.text)
 
-        Logger.error('Can\'t get json. Status code: ' + response.status_code)
 
 

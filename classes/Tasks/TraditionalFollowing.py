@@ -6,38 +6,36 @@ from time import sleep
 
 from classes.Instagram.instaUser import User
 from classes.Log.LogClass import Logger
-from classes.Sourse.commentTemplateList import templateListRu
+from classes.Sourse.commentTemplateList import templateListEn
 from classes.Tasks.BaseTask import BaseTask
 from classes.TextGenerator.MsgGenerator import MsgGenerator
 
 class TraditionalFollowing(BaseTask):
     def __init__(self, insta):
         super().__init__(insta)
-        self.delay = [35, 55]
-        self.tagIndex = 0
         self.userIndex = 0
-        self.tagPostIndex = 0
         self.tagsGenerator = None
 
     def runTask(self):
-        if not self.usersList:
+        if not self._usersList:
             # self.usersList = self.getUsersByLocation(225196070)
             # self.usersList = self.getUsersFollowers('fudduxujd')
-            self.usersList = self.getUsersByTag(self.getNextTag())
+            self._usersList = self.getUsersByTag(self.getNextTag())
 
         currentUser = self.getNextUser()
         if not currentUser:
             return None
 
         if currentUser.isNormal():
-            Logger.log('Enter to user #%d: %s' % (self.userIndex - 1, currentUser.username))
-            Logger.log('User link: ' + "https://www.instagram.com/%s/" % currentUser.username)
-            likeList = self.getLikeListId(currentUser)
-            for mediaId in likeList:
-                self.insta.like(mediaId)
-                sleep(7)
+            Logger.log('Enter to user #{}: {}'.format(self.userIndex - 1, currentUser.username))
+            Logger.log('User link: https://www.instagram.com/{}/'.format(currentUser.username))
 
             if not currentUser.isFollower:
+                likeList = self.getLikeListId(currentUser)
+                for mediaId in likeList:
+                    self._insta.like(mediaId)
+                    sleep(7)
+
                 # self.insta.follow(currentUser.id)
                 self.writeComment(currentUser)
 
@@ -49,9 +47,8 @@ class TraditionalFollowing(BaseTask):
         Logger.log('\n')
 
     def writeComment(self, currentUser):
-        comment = MsgGenerator(templateListRu).generate()
-        Logger.log('Comment: %s' % comment)
-        self.insta.comment(currentUser.media[0]['id'], comment)
+        comment = MsgGenerator(templateListEn).generate()
+        self._insta.comment(currentUser.media[0]['id'], comment)
 
     def getLikeListId(self, currentUser):
         countMedia = len(currentUser.media)
@@ -71,33 +68,33 @@ class TraditionalFollowing(BaseTask):
         return likeListId
 
     def getNextTag(self):
-        self.tagsGenerator = cycle(self.tagsList) if not self.tagsGenerator else self.tagsGenerator
+        self.tagsGenerator = cycle(self._tagsList) if not self.tagsGenerator else self.tagsGenerator
         return next(self.tagsGenerator)
 
     def getNextUser(self) -> User:
         userNext = None
-        if len(self.usersList) > self.userIndex:
-            userNext = self.usersList[self.userIndex]
+        if len(self._usersList) > self.userIndex:
+            userNext = self._usersList[self.userIndex]
             self.userIndex += 1
         else:
-            self.usersList = []
+            self._usersList = []
             self.userIndex = 0
         return userNext
 
     def getUsersByTag(self, tag):
         return list(map(
-            lambda x: User(self.insta.getUserInfoByLogin(x)),
-            self.insta.getUserNamesByTag(tag)
+            lambda x: User(self._insta.getUserInfoByLogin(x)),
+            self._insta.getUserNamesByTag(tag)
         ))
 
     def getUsersFollowers(self, username):
         return list(map(
-            lambda x: User(self.insta.getUserInfoByLogin(x)),
-            self.insta.getUserFollowers(username, 50)
+            lambda x: User(self._insta.getUserInfoByLogin(x)),
+            self._insta.getUserFollowers(username, 50)
         ))
 
     def getUsersByLocation(self, locationId):
         return list(map(
-            lambda x: User(self.insta.getUserInfoByLogin(x)),
-            self.insta.getUsersByLocation(locationId)
+            lambda x: User(self._insta.getUserInfoByLogin(x)),
+            self._insta.getUsersByLocation(locationId)
         ))

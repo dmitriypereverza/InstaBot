@@ -8,5 +8,5 @@ def getMediaInfoByCode(mediaCode):
     urlFollow = Endpoints.urlMediaDetail % mediaCode
     try:
         return RequestFacade().getJson(urlFollow)['graphql']
-    except:
-        Logger.log("Error in getMediaInfoByCode()!")
+    except Exception as e:
+        Logger.log("Error in getMediaInfoByCode(). Error: {}".format(e))
