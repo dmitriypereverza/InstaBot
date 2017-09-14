@@ -38,7 +38,7 @@ class RequestFacade(RequestHandlerMixin):
     def get(self, *args, **kwargs):
         response = self.session.get(*args, **kwargs)
         if response.status_code != 200:
-            Logger.error('Can\'t do get request. Status code: ' + response.status_code)
+            Logger.error('Can\'t do get request. Status code: {}'.format(response.status_code))
         return response
 
     def headersUpdate(self, *args, **kwargs):

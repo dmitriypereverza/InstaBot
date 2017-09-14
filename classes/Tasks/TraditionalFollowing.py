@@ -31,7 +31,7 @@ class TraditionalFollowing(BaseTask):
             Logger.log('User link: https://www.instagram.com/{}/'.format(currentUser.username))
 
             if not currentUser.isFollower:
-                likeList = self.getLikeListId(currentUser)
+                likeList = self.getLikeFromLastMedia(currentUser, 1, 1)
                 for mediaId in likeList:
                     self._insta.like(mediaId)
                     sleep(7)
@@ -50,21 +50,18 @@ class TraditionalFollowing(BaseTask):
         comment = MsgGenerator(templateListEn).generate()
         self._insta.comment(currentUser.media[0]['id'], comment)
 
-    def getLikeListId(self, currentUser):
+    def getLikeFromLastMedia(self, currentUser, lastMediaRange, likeCount):
         countMedia = len(currentUser.media)
+        if likeCount > countMedia or likeCount > lastMediaRange:
+            likeCount = min((countMedia, lastMediaRange))
+        if countMedia < lastMediaRange:
+            lastMediaRange = countMedia
         likeListId = []
-        if 0 < countMedia <= 3:
-            for media in currentUser.media:
-                likeListId.append(media['id'])
-        if 3 < countMedia < 10:
-            likeListId.append(currentUser.media[0]['id'])
-            for number in sample(range(1, countMedia), 2):
+        if lastMediaRange == 1:
+            likeListId.append(currentUser.media[1]['id'])
+        else:
+            for number in sample(range(1, lastMediaRange), likeCount):
                 likeListId.append(currentUser.media[number]['id'])
-        if countMedia >= 10:
-            likeListId.append(currentUser.media[0]['id'])
-            for number in sample(range(1, 10), 2):
-                likeListId.append(currentUser.media[number]['id'])
-
         return likeListId
 
     def getNextTag(self):
@@ -72,14 +69,7 @@ class TraditionalFollowing(BaseTask):
         return next(self.tagsGenerator)
 
     def getNextUser(self) -> User:
-        userNext = None
-        if len(self._usersList) > self.userIndex:
-            userNext = self._usersList[self.userIndex]
-            self.userIndex += 1
-        else:
-            self._usersList = []
-            self.userIndex = 0
-        return userNext
+        return self._usersList.pop()
 
     def getUsersByTag(self, tag):
         return list(map(
