@@ -3,7 +3,7 @@
 from classes.Connection.requestHandlerMixin import RequestHandlerMixin
 from classes.Exeptions.exeptions import TypeErrorExeption
 from classes.Instagram import Endpoints
-from classes.Log.LogClass import Logger
+from classes.Log.Log import Logger
 
 class InstaConnect:
     csrfToken = None
@@ -33,10 +33,10 @@ class InstaConnect:
             finder = r.text.find(login)
             if finder != -1:
                 self.loginSuccess = True
-                Logger.sucess("Login like {} success!".format(login))
+                Logger().success("Login like {} success!".format(login))
 
         else:
-            Logger.error("Incorrect login or password!")
+            Logger().error("Incorrect login or password!")
 
     def logout(self):
         try:
@@ -44,7 +44,7 @@ class InstaConnect:
             self.requestManager.post(Endpoints.urlLogout, data = logoutPost)
             self.loginSuccess = False
         except Exception as e:
-            Logger.error("Logout error! " + e)
+            Logger().error("Logout error! " + e)
 
     def isConnected(self):
         return self.loginSuccess

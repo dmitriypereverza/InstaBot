@@ -7,19 +7,19 @@ from classes.Connection.instaConnector import InstaConnect
 from classes.Connection.request import RequestFacade
 from classes.Instagram import Endpoints, InstaQuery
 from classes.Instagram.instaUser import User
-from classes.Log.LogClass import Logger
+from classes.Log.Log import Logger
 
 def checkConnectAndLogged(func):
     @functools.wraps(func)
     def inner(self, *args, **kwargs):
         if self.instaConnector.isConnected():
-            Logger.log("Try to exect {}() with params: {} {}.".format(func.__name__, args, kwargs))
+            Logger().log("Try to exect {}() with params: {} {}.".format(func.__name__, args, kwargs))
             try:
                 return func(self, *args, **kwargs)
             except Exception as e:
-                Logger.error("Exception: {}; On get data from {}!".format(e, func.__name__))
+                Logger().error("Exception: {}; On get data from {}!".format(e, func.__name__))
         else:
-            Logger.error("Not connect!")
+            Logger().error("Not connect!")
     return inner
 
 def checkBan(func=None, *, minuteCount=60):
@@ -32,10 +32,10 @@ def checkBan(func=None, *, minuteCount=60):
             response = func(self, *args, **kwargs)
             if response.status_code == 400:
                 func.nextExec = time.time() + (60 * minuteCount)
-                Logger.error("Probably ban. Wait {} minute!".format(minuteCount))
+                Logger().error("Probably ban. Wait {} minute!".format(minuteCount))
                 return None
             return response
-        Logger.error("Expiring ban time. Wait {} minute!".format((func.nextExec - time.time()) // 60))
+        Logger().error("Expiring ban time. Wait {} minute!".format((func.nextExec - time.time()) // 60))
     return inner
 
 class InstaBot:

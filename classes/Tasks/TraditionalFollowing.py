@@ -5,7 +5,7 @@ from random import sample
 from time import sleep
 
 from classes.Instagram.instaUser import User
-from classes.Log.LogClass import Logger
+from classes.Log.Log import Logger
 from classes.Sourse.commentTemplateList import templateListEn
 from classes.Tasks.BaseTask import BaseTask
 from classes.TextGenerator.MsgGenerator import MsgGenerator
@@ -27,8 +27,8 @@ class TraditionalFollowing(BaseTask):
             return None
 
         if currentUser.isNormal():
-            Logger.log('Enter to user #{}: {}'.format(self.userIndex - 1, currentUser.username))
-            Logger.log('User link: https://www.instagram.com/{}/'.format(currentUser.username))
+            Logger().log('Enter to user: {}'.format(currentUser.username))
+            Logger().log('User link: https://www.instagram.com/{}/'.format(currentUser.username))
 
             if not currentUser.isFollower:
                 likeList = self.getLikeFromLastMedia(currentUser, 1, 1)
@@ -41,10 +41,10 @@ class TraditionalFollowing(BaseTask):
 
             self.setNextExec()
         else:
-            Logger.log('Skip user #%d: %s' % (self.userIndex - 1, currentUser.username))
-            Logger.log('User link: ' + "https://www.instagram.com/%s/" % currentUser.username)
+            Logger().log('Skip user #%d: %s' % (self.userIndex - 1, currentUser.username))
+            Logger().log('User link: ' + "https://www.instagram.com/%s/" % currentUser.username)
 
-        Logger.log('\n')
+        Logger().log('\n')
 
     def writeComment(self, currentUser):
         comment = MsgGenerator(templateListEn).generate()

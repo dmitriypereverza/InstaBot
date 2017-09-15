@@ -7,7 +7,7 @@ import time
 
 from classes.Exeptions.exeptions import NotOverrideMethodExeption
 from  classes.Instagram.InstaBot import InstaBot
-from classes.Log.LogClass import Logger
+from classes.Log.Log import Logger
 
 class BaseTask:
     def __init__(self, insta):
@@ -26,7 +26,7 @@ class BaseTask:
             self.runTask()
         else:
             time.sleep(1)
-            self._showTime and Logger.loadingText('Осталось {} секунд'.format(round(self.getTimeLeft(), 0)))
+            # self._showTime and Logger.loadingText('Осталось {} секунд'.format(round(self.getTimeLeft(), 0)))
 
     def runTask(self):
         raise NotOverrideMethodExeption('Do not overided method: runTask()')

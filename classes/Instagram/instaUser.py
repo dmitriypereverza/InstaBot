@@ -11,7 +11,7 @@ NORMAL_COEFICIENT = 2
 FAKE_FOLLOWED_LIMIT = 150
 BEGINNER_FOLLOWS_COUNT = 50
 
-class User(namedtuple('User', ("id", "username", "followsCount", "followed_by", "fullName", "media", "biography", "isFollower", "isFollowing"))):
+class User(namedtuple('User', ("id", "username", "followsCount", "followed_by", "fullName", "media", "media_count", "biography", "isFollower", "isFollowing"))):
 
     def __new__(cls, userInfo):
         return super().__new__(cls,
@@ -21,6 +21,7 @@ class User(namedtuple('User', ("id", "username", "followsCount", "followed_by", 
             followed_by = userInfo['followed_by']['count'],
             fullName = userInfo['full_name'],
             media = userInfo['media']['nodes'],
+            media_count = userInfo['media']['count'],
             biography = userInfo['biography'],
             isFollower = userInfo['follows_viewer'] or userInfo['has_requested_viewer'],
             isFollowing = userInfo['followed_by_viewer'] or userInfo['requested_by_viewer'],
@@ -47,7 +48,3 @@ class User(namedtuple('User', ("id", "username", "followsCount", "followed_by", 
         for x in unwanted_username_list:
             if re.search(x, self.username):
                 return True
-
-    @classmethod
-    def getUserByName(cls, login):
-        return cls()

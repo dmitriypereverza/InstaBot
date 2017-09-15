@@ -2,21 +2,17 @@
 # -*- coding: utf-8 -*-
 import sys
 
-class Logger:
-    def log(text):
+from classes.Log.Loggers.LoggerMixin import LoggerMixin
+
+class ConsoleLogger(LoggerMixin):
+    def log(self, text):
         print(text)
 
-    def error(text):
+    def error(self, text):
         sys.stderr.write(bcolors.FAIL + text + bcolors.ENDC + '\n')
 
-    def sucess(text):
+    def success(self, text):
         print(bcolors.OKBLUE + text + bcolors.ENDC + '\n')
-
-    def warning(text):
-        print(bcolors.WARNING + text + bcolors.ENDC + '\n')
-
-    def loadingText(text):
-        sys.stdout.write('\r' + text)
 
 class bcolors:
     HEADER = '\033[95m'
