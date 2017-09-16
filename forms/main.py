@@ -3,9 +3,9 @@
 
 import sys
 import threading
-from collections import namedtuple
-
 import run
+from collections import namedtuple
+from PyQt5.QtCore import pyqtSignal
 from classes.Log.Log import Logger
 from classes.Log.Loggers.TextEditLogger import TextEditLogger
 from forms.ui.custom.CustomListView import QAccountList
@@ -13,17 +13,31 @@ from forms.ui.startForm import Ui_Form
 from PyQt5 import QtWidgets
 
 class MainForm(QtWidgets.QWidget):
+    logSendSignal = pyqtSignal(str, name='logSendSignal')
+    accountAddSignal = pyqtSignal(str, str, str, name='accountAddSignal')
+
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        self.registerForeignSignals()
+        self.registerInnerSignals()
 
+    def registerInnerSignals(self):
         self.ui.pushButton_2.clicked.connect(self.start_bot)
 
+    def registerForeignSignals(self):
+        self.logSendSignal.connect(self.log_send)
+        self.accountAddSignal.connect(self.add_account_row)
+
     def start_bot(self):
-        Logger().setLoggerType(TextEditLogger(self.ui.textEdit))
+        Logger().setLoggerType(TextEditLogger(self.logSendSignal))
         t = threading.Thread(target=run.run)
+        t.daemon = True
         t.start()
+
+    def log_send(self, text):
+        self.ui.textEdit.insertHtml(text)
 
     def add_account_row(self, index, name, icon):
         Account = namedtuple('Account', ['index', 'name', 'icon'])

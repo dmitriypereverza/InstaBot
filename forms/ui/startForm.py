@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'accountList.ui'
+# Form implementation generated from reading ui file 'startForm.ui'
 #
 # Created by: PyQt5 UI code generator 5.9
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
-from forms.ui.custom.CustomListView import QAccountList
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -47,7 +45,8 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.label_2.setText(_translate("Form", "Список аккаунтов"))
+        self.label_2.setText(_translate("Form", "Аккаунты бота"))
         self.label.setText(_translate("Form", "Лог бота"))
         self.pushButton_2.setText(_translate("Form", "Запустить"))
         self.pushButton.setText(_translate("Form", "Остановить"))
+
