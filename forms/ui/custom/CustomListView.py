@@ -7,11 +7,14 @@ import requests
 import shutil
 import validators
 from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QPixmap
 
 from config import resourse_dir_path
 
 class QAccountList(QtWidgets.QWidget):
+    botStartSignal = None
+
     def __init__(self, parent=None):
         super(QAccountList, self).__init__(parent)
         self.textQVBoxLayout = QtWidgets.QVBoxLayout()
@@ -26,15 +29,17 @@ class QAccountList(QtWidgets.QWidget):
 
         self.allQHBoxLayout.addSpacing(1)
 
-        self.pushButton_2 = QtWidgets.QPushButton()
-        self.pushButton_2.setObjectName("pushButton_account_start")
-        self.pushButton_2.setText("Запустить")
-        self.allQHBoxLayout.addWidget(self.pushButton_2)
+        self.pushButton_1 = QtWidgets.QPushButton()
+        self.pushButton_1.setObjectName("pushButton_account_start")
+        self.pushButton_1.setText("Запустить")
+        self.allQHBoxLayout.addWidget(self.pushButton_1)
 
         self.pushButton_2 = QtWidgets.QPushButton()
         self.pushButton_2.setObjectName("pushButton_account_stop")
         self.pushButton_2.setText("Остановить")
         self.allQHBoxLayout.addWidget(self.pushButton_2)
+
+        self.setInnerSignal()
 
         self.setLayout(self.allQHBoxLayout)
         # setStyleSheet
@@ -44,6 +49,15 @@ class QAccountList(QtWidgets.QWidget):
         self.textDownQLabel.setStyleSheet('''
             color: rgb(255, 0, 0);
         ''')
+
+    def setInnerSignal(self):
+        self.pushButton_1.clicked.connect(self.push_start_btn)
+
+    def push_start_btn(self):
+        self.botStartSignal.emit(self.sender().parent().textUpQLabel.text())
+
+    def setBotStartSignal(self, signal):
+        self.botStartSignal = signal
 
     def setTextUp(self, text):
         self.textUpQLabel.setText(text)

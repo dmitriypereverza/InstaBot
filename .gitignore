@@ -1,6 +1,6 @@
 .idea
 /classes/Database/people.db
-/run.py
+/bot.py
 **/__pycache__/
 /config.py
 public/

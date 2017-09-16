@@ -3,7 +3,7 @@
 
 import sys
 import threading
-import run
+import bot
 from collections import namedtuple
 from PyQt5.QtCore import pyqtSignal
 
@@ -17,6 +17,7 @@ from PyQt5 import QtWidgets
 class MainForm(QtWidgets.QWidget):
     logSendSignal = pyqtSignal(str, name='logSendSignal')
     accountAddSignal = pyqtSignal(str, str, str, name='accountAddSignal')
+    startBotAccount = pyqtSignal(str, name='startBotAccount')
 
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
@@ -33,10 +34,11 @@ class MainForm(QtWidgets.QWidget):
     def registerForeignSignals(self):
         self.logSendSignal.connect(self.log_send)
         self.accountAddSignal.connect(self.add_account_row)
+        self.startBotAccount.connect(self.start_bot)
 
-    def start_bot(self):
+    def start_bot(self, login):
         Logger().setLoggerType(TextEditLogger(self.logSendSignal))
-        t = threading.Thread(target=run.run)
+        t = threading.Thread(target=bot.runBylogin, args=(login,))
         t.daemon = True
         t.start()
 
@@ -46,13 +48,14 @@ class MainForm(QtWidgets.QWidget):
     def fillAccountList(self):
         AccountManager(self.accountAddSignal).fillUIAccountList()
 
-    def add_account_row(self, index, name, icon):
-        Account = namedtuple('Account', ['index', 'name', 'icon'])
-        account = Account(index, name, icon)
+    def add_account_row(self, password, name, icon):
         myQCustomQWidget = QAccountList()
-        myQCustomQWidget.setTextUp(account.name)
-        myQCustomQWidget.setTextDown(account.index)
-        myQCustomQWidget.setIcon(account.icon, account.name)
+        myQCustomQWidget.setTextUp(name)
+        myQCustomQWidget.setTextDown(password)
+        myQCustomQWidget.setIcon(icon, name)
+
+        myQCustomQWidget.setBotStartSignal(self.startBotAccount)
+
         myQListWidgetItem = QtWidgets.QListWidgetItem(self.ui.listWidget)
         myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
         self.ui.listWidget.addItem(myQListWidgetItem)
