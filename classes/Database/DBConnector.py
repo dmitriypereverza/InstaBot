@@ -1,3 +1,3 @@
-from peewee import *
+from peewee import SqliteDatabase
 
-db = SqliteDatabase('people.db')
+db = SqliteDatabase('/home/west920/PycharmProjects/InstaBot/classes/Database/people.db')

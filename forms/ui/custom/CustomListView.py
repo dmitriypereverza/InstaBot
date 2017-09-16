@@ -1,8 +1,15 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+import urllib
+from pathlib import Path
 
-from PyQt5 import QtWidgets
+import requests
+import shutil
+import validators
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtGui import QPixmap
+
+from config import resourse_dir_path
 
 class QAccountList(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -44,5 +51,15 @@ class QAccountList(QtWidgets.QWidget):
     def setTextDown(self, text):
         self.textDownQLabel.setText(text)
 
-    def setIcon(self, imagePath):
-        self.iconQLabel.setPixmap(QPixmap(imagePath))
+    def setIcon(self, imagePath, login):
+        imgPath = Path('{}/img/avatars/{}.jpeg'.format(resourse_dir_path, login))
+        if not imgPath.exists():
+            if validators.url(imagePath):
+                response = requests.get(imagePath, stream=True)
+                with open(imgPath._str, 'wb') as out_file:
+                    shutil.copyfileobj(response.raw, out_file)
+                del response
+
+        pixmap = QPixmap(imgPath._str)
+        if not pixmap.isNull():
+            self.iconQLabel.setPixmap(pixmap.scaled(48, 48))

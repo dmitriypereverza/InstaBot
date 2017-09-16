@@ -1,4 +1,7 @@
 .idea
-/people.db
+/classes/Database/people.db
 /run.py
 **/__pycache__/
+/config.py
+public/
+*.db

@@ -1,15 +1,20 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from classes.Database.DBConnector import *
-
+from peewee import Model, BooleanField, CharField, IntegerField, DateField
+from classes.Database.DBConnector import db
 
 class BotAccount(Model):
-    is_active = BooleanField()
+    class Meta:
+        database = db
+        db_table = 'acounts'
+
+    is_active = BooleanField(default=False)
     login = CharField()
     password = CharField()
+    img_url = CharField()
     user_id = IntegerField()
-    token = CharField()
+    token = CharField(default=None)
     date_create = DateField()
 
     def __init__(self):
@@ -17,6 +22,5 @@ class BotAccount(Model):
         if not self.table_exists():
             self.create_table()
 
-    class Meta:
-        database = db
-        db_table = 'acounts'
+    def getAllAccounts(self):
+        return self.select()

@@ -6,6 +6,8 @@ import threading
 import run
 from collections import namedtuple
 from PyQt5.QtCore import pyqtSignal
+
+from classes.Accounts.AccountManager import AccountManager
 from classes.Log.Log import Logger
 from classes.Log.Loggers.TextEditLogger import TextEditLogger
 from forms.ui.custom.CustomListView import QAccountList
@@ -23,6 +25,8 @@ class MainForm(QtWidgets.QWidget):
         self.registerForeignSignals()
         self.registerInnerSignals()
 
+        self.fillAccountList()
+
     def registerInnerSignals(self):
         self.ui.pushButton_2.clicked.connect(self.start_bot)
 
@@ -39,13 +43,16 @@ class MainForm(QtWidgets.QWidget):
     def log_send(self, text):
         self.ui.textEdit.insertHtml(text)
 
+    def fillAccountList(self):
+        AccountManager(self.accountAddSignal).fillUIAccountList()
+
     def add_account_row(self, index, name, icon):
         Account = namedtuple('Account', ['index', 'name', 'icon'])
         account = Account(index, name, icon)
         myQCustomQWidget = QAccountList()
-        myQCustomQWidget.setTextUp(account.index)
-        myQCustomQWidget.setTextDown(account.name)
-        myQCustomQWidget.setIcon(account.icon)
+        myQCustomQWidget.setTextUp(account.name)
+        myQCustomQWidget.setTextDown(account.index)
+        myQCustomQWidget.setIcon(account.icon, account.name)
         myQListWidgetItem = QtWidgets.QListWidgetItem(self.ui.listWidget)
         myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
         self.ui.listWidget.addItem(myQListWidgetItem)
