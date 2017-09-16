@@ -3,27 +3,35 @@
 
 import sys
 import threading
-from collections import namedtuple
-
 import run
-from classes.Log.Log import Logger
+from collections import namedtuple
+from PyQt5.QtCore import pyqtSignal
 from classes.Log.Loggers.TextEditLogger import TextEditLogger
 from forms.ui.custom.CustomListView import QAccountList
 from forms.ui.startForm import Ui_Form
 from PyQt5 import QtWidgets
 
 class MainForm(QtWidgets.QWidget):
+    logSendSignal = pyqtSignal(str, name='logSendSignal')
+
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_Form()
         self.ui.setupUi(self)
 
+        self.logSendSignal.connect(self.logSend)
         self.ui.pushButton_2.clicked.connect(self.start_bot)
+        self.ui.pushButton.clicked.connect(self.add_account_row)
 
     def start_bot(self):
-        Logger().setLoggerType(TextEditLogger(self.ui.textEdit))
+        from classes.Log.Log import Logger
+        Logger().setLoggerType(TextEditLogger(self.logSendSignal))
         t = threading.Thread(target=run.run)
+        t.daemon = True
         t.start()
+
+    def logSend(self, text):
+        self.ui.textEdit.insertHtml(text)
 
     def add_account_row(self, index, name, icon):
         Account = namedtuple('Account', ['index', 'name', 'icon'])
