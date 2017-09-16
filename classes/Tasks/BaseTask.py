@@ -23,7 +23,7 @@ class BaseTask:
 
     def exec(self):
         if self.isDelayExpired() and not self.isLimitExpired():
-            self.runTask()
+            self.runTask
         else:
             time.sleep(1)
             # self._showTime and Logger.loadingText('Осталось {} секунд'.format(round(self.getTimeLeft(), 0)))

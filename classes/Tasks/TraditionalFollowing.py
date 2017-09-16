@@ -46,11 +46,11 @@ class TraditionalFollowing(BaseTask):
 
         Logger().log('\n')
 
-    def writeComment(self, currentUser):
+    def writeComment(self, currentUser: User):
         comment = MsgGenerator(templateListEn).generate()
         self._insta.comment(currentUser.media[0]['id'], comment)
 
-    def getLikeFromLastMedia(self, currentUser, lastMediaRange, likeCount):
+    def getLikeFromLastMedia(self, currentUser: User, lastMediaRange, likeCount):
         countMedia = len(currentUser.media)
         if likeCount > countMedia or likeCount > lastMediaRange:
             likeCount = min((countMedia, lastMediaRange))

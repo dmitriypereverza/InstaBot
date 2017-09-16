@@ -13,10 +13,19 @@ class TextEditLogger(LoggerMixin):
         self.output = output
 
     def log(self, text):
+        self.output.setStyleSheet('''
+            color: rgb(0, 0, 0);
+        ''')
         self.output.append(text)
 
     def error(self, text):
+        self.output.setStyleSheet('''
+            color: rgb(200, 0, 0);
+        ''')
         self.output.append(text)
 
     def success(self, text):
+        self.output.setStyleSheet('''
+            color: rgb(0, 200, 0);
+        ''')
         self.output.append(text)
