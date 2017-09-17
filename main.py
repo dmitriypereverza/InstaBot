@@ -2,18 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import threading
-import bot
-from collections import namedtuple
+
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
 from classes.Accounts.AccountManager import AccountManager
+from classes.Bot import bot
 from classes.Log.Log import Logger
 from classes.Log.Loggers.TextEditLogger import TextEditLogger
 from classes.Thread.threadPull import ThreadsPull
 from forms.ui.custom.CustomListView import QAccountList
 from forms.ui.startForm import Ui_Form
-from PyQt5 import QtWidgets
 
 class MainForm(QtWidgets.QWidget):
     logSendSignal = pyqtSignal(str, name='logSendSignal')

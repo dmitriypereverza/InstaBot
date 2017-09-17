@@ -1,7 +1,8 @@
 .idea
 /classes/Database/people.db
-/bot.py
+/classes/Bot/bot.py
 **/__pycache__/
 /config.py
 public/
 *.db
+/build
