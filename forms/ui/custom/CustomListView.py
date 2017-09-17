@@ -6,8 +6,7 @@ from pathlib import Path
 import requests
 import shutil
 import validators
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtCore import pyqtSignal
+from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 
 from config import resourse_dir_path
@@ -19,9 +18,9 @@ class QAccountList(QtWidgets.QWidget):
         super(QAccountList, self).__init__(parent)
         self.textQVBoxLayout = QtWidgets.QVBoxLayout()
         self.textUpQLabel = QtWidgets.QLabel()
-        self.textDownQLabel = QtWidgets.QLabel()
+        self.statusLable = QtWidgets.QLabel()
         self.textQVBoxLayout.addWidget(self.textUpQLabel)
-        self.textQVBoxLayout.addWidget(self.textDownQLabel)
+        self.textQVBoxLayout.addWidget(self.statusLable)
         self.allQHBoxLayout = QtWidgets.QHBoxLayout()
         self.iconQLabel = QtWidgets.QLabel()
         self.allQHBoxLayout.addWidget(self.iconQLabel)
@@ -34,11 +33,6 @@ class QAccountList(QtWidgets.QWidget):
         self.pushButton_1.setText("Запустить")
         self.allQHBoxLayout.addWidget(self.pushButton_1)
 
-        self.pushButton_2 = QtWidgets.QPushButton()
-        self.pushButton_2.setObjectName("pushButton_account_stop")
-        self.pushButton_2.setText("Остановить")
-        self.allQHBoxLayout.addWidget(self.pushButton_2)
-
         self.setInnerSignal()
 
         self.setLayout(self.allQHBoxLayout)
@@ -46,7 +40,7 @@ class QAccountList(QtWidgets.QWidget):
         self.textUpQLabel.setStyleSheet('''
             color: rgb(0, 0, 255);
         ''')
-        self.textDownQLabel.setStyleSheet('''
+        self.statusLable.setStyleSheet('''
             color: rgb(255, 0, 0);
         ''')
 
@@ -54,6 +48,10 @@ class QAccountList(QtWidgets.QWidget):
         self.pushButton_1.clicked.connect(self.push_start_btn)
 
     def push_start_btn(self):
+        if self.sender().text() != "Остановить":
+            self.sender().setText("Остановить")
+        else:
+            self.sender().parent().statusLable.setText("Пытаюсь остановиться...")
         self.botStartSignal.emit(self.sender().parent().textUpQLabel.text())
 
     def setBotStartSignal(self, signal):
@@ -62,8 +60,8 @@ class QAccountList(QtWidgets.QWidget):
     def setTextUp(self, text):
         self.textUpQLabel.setText(text)
 
-    def setTextDown(self, text):
-        self.textDownQLabel.setText(text)
+    def setStatus(self, text):
+        self.statusLable.setText(text)
 
     def setIcon(self, imagePath, login):
         imgPath = Path('{}/img/avatars/{}.jpeg'.format(resourse_dir_path, login))
