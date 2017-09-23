@@ -5,14 +5,16 @@ import sys
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QListWidgetItem
 
 from classes.Accounts.AccountManager import AccountManager
 from classes.Bot import bot
 from classes.Log.Log import Logger
 from classes.Log.Loggers.TextEditLogger import TextEditLogger
 from classes.Thread.threadPull import ThreadsPull
-from forms.ui.custom.CustomListView import QAccountList
-from forms.ui.startForm import Ui_Form
+from forms.Controllers.accountListController import AccountListController
+from forms.Ui_AccountDialog import Ui_AccountDialog
+from forms.Ui_MainForm import Ui_MainForm
 
 class MainForm(QtWidgets.QWidget):
     logSendSignal = pyqtSignal(str, name='logSendSignal')
@@ -22,7 +24,7 @@ class MainForm(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
-        self.ui = Ui_Form()
+        self.ui = Ui_MainForm()
         self.ui.setupUi(self)
         self.registerForeignSignals()
         self.registerInnerSignals()
@@ -31,6 +33,7 @@ class MainForm(QtWidgets.QWidget):
 
     def registerInnerSignals(self):
         self.ui.pushButton_2.clicked.connect(self.start_bot)
+        self.ui.listWidget.itemDoubleClicked.connect(self.account_dialog)
 
     def registerForeignSignals(self):
         self.logSendSignal.connect(self.log_send)
@@ -45,11 +48,16 @@ class MainForm(QtWidgets.QWidget):
     def log_send(self, text):
         self.ui.textEdit.insertHtml(text)
 
+    def account_dialog(self, item: QListWidgetItem):
+        dialog = Ui_AccountDialog()
+        data = dialog.getData()
+        print(data)
+
     def fillAccountList(self):
         AccountManager(self.accountAddSignal).fillUIAccountList()
 
     def add_account_row(self, name, icon):
-        myQCustomQWidget = QAccountList()
+        myQCustomQWidget = AccountListController()
         myQCustomQWidget.setTextUp(name)
         myQCustomQWidget.setStatus('Готов к запуску')
         myQCustomQWidget.setIcon(icon, name)

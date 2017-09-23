@@ -10,39 +10,15 @@ from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 
 from config import resourse_dir_path
+from forms.UI_AccountList import UI_AccountList
 
-class QAccountList(QtWidgets.QWidget):
+class AccountListController(UI_AccountList):
     botStartSignal = None
 
-    def __init__(self, parent=None):
-        super(QAccountList, self).__init__(parent)
-        self.textQVBoxLayout = QtWidgets.QVBoxLayout()
-        self.textUpQLabel = QtWidgets.QLabel()
-        self.statusLable = QtWidgets.QLabel()
-        self.textQVBoxLayout.addWidget(self.textUpQLabel)
-        self.textQVBoxLayout.addWidget(self.statusLable)
-        self.allQHBoxLayout = QtWidgets.QHBoxLayout()
-        self.iconQLabel = QtWidgets.QLabel()
-        self.allQHBoxLayout.addWidget(self.iconQLabel)
-        self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
-
-        self.allQHBoxLayout.addSpacing(1)
-
-        self.pushButton_1 = QtWidgets.QPushButton()
-        self.pushButton_1.setObjectName("pushButton_account_start")
-        self.pushButton_1.setText("Запустить")
-        self.allQHBoxLayout.addWidget(self.pushButton_1)
-
+    def __init__(self):
+        super().__init__()
+        self.setupUi()
         self.setInnerSignal()
-
-        self.setLayout(self.allQHBoxLayout)
-        # setStyleSheet
-        self.textUpQLabel.setStyleSheet('''
-            color: rgb(0, 0, 255);
-        ''')
-        self.statusLable.setStyleSheet('''
-            color: rgb(255, 0, 0);
-        ''')
 
     def setInnerSignal(self):
         self.pushButton_1.clicked.connect(self.push_start_btn)
