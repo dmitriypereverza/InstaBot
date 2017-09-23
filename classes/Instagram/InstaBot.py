@@ -41,9 +41,9 @@ def checkBan(func=None, *, minuteCount=60):
 class InstaBot:
     ownerAccount = None
 
-    def __init__(self, login, password):
+    def __init__(self, login=None, password=None):
         self.botStart = datetime.datetime.now()
-        self.userLogin = login.lower()
+        self.userLogin = login.lower() if login else None
         self.userPassword = password
         self.requestManager = RequestFacade()
         self.instaConnector = InstaConnect(self.requestManager)
@@ -105,7 +105,7 @@ class InstaBot:
         return response['data']['user']['edge_followed_by']['edges']
 
     def getUserInfoByLogin(self, userName):
-        return self.requestManager.getJson(Endpoints.urlUserInfo % userName)['user']
+        return self.requestManager.getJson(Endpoints.urlUserDetail % userName)['user']
 
     def getUsersByTags(self, tags):
         userList = []
