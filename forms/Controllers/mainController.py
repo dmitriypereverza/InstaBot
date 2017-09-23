@@ -12,6 +12,7 @@ from classes.Bot import bot
 from classes.Log.Log import Logger
 from classes.Log.Loggers.TextEditLogger import TextEditLogger
 from classes.Thread.threadPull import ThreadsPull
+from forms.Controllers.accountDialogController import AccountDialogController
 from forms.Controllers.accountListController import AccountListController
 from forms.Ui_AccountDialog import Ui_AccountDialog
 from forms.Ui_MainForm import Ui_MainForm
@@ -33,7 +34,7 @@ class MainForm(QtWidgets.QWidget):
 
     def registerInnerSignals(self):
         self.ui.pushButton_2.clicked.connect(self.start_bot)
-        self.ui.listWidget.itemDoubleClicked.connect(self.account_dialog)
+        self.ui.listWidget.itemDoubleClicked.connect(self.open_account_dialog)
 
     def registerForeignSignals(self):
         self.logSendSignal.connect(self.log_send)
@@ -48,8 +49,9 @@ class MainForm(QtWidgets.QWidget):
     def log_send(self, text):
         self.ui.textEdit.insertHtml(text)
 
-    def account_dialog(self, item: QListWidgetItem):
-        dialog = Ui_AccountDialog()
+    def open_account_dialog(self, item: QListWidgetItem):
+        itemWidget = self.ui.listWidget.itemWidget(item)
+        dialog = AccountDialogController(itemWidget.getTitleElement().text())
         data = dialog.getData()
         print(data)
 
@@ -77,9 +79,3 @@ class MainForm(QtWidgets.QWidget):
         row = self.ui.listWidget.item(bot_id)
         widget = self.ui.listWidget.itemWidget(row)
         return widget
-
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    my_app = MainForm()
-    my_app.show()
-    sys.exit(app.exec_())

@@ -20,8 +20,20 @@ class AccountListController(UI_AccountList):
         self.setupUi()
         self.setInnerSignal()
 
+    def getStartButton(self):
+        return self.pushButton_1
+
+    def getStatusElement(self):
+        return self.statusLable
+
+    def getTitleElement(self):
+        return self.textUpQLabel
+
+    def getLableElement(self):
+        return self.iconQLabel
+
     def setInnerSignal(self):
-        self.pushButton_1.clicked.connect(self.push_start_btn)
+        self.getStartButton().clicked.connect(self.push_start_btn)
 
     def push_start_btn(self):
         if self.sender().text() != "Остановить":
@@ -34,10 +46,10 @@ class AccountListController(UI_AccountList):
         self.botStartSignal = signal
 
     def setTextUp(self, text):
-        self.textUpQLabel.setText(text)
+        self.getTitleElement().setText(text)
 
     def setStatus(self, text):
-        self.statusLable.setText(text)
+        self.getStatusElement().setText(text)
 
     def setIcon(self, imagePath, login):
         imgPath = Path('{}/img/avatars/{}.jpeg'.format(resourse_dir_path, login))
@@ -50,4 +62,4 @@ class AccountListController(UI_AccountList):
 
         pixmap = QPixmap(imgPath._str)
         if not pixmap.isNull():
-            self.iconQLabel.setPixmap(pixmap.scaled(48, 48))
+            self.getLableElement().setPixmap(pixmap.scaled(48, 48))
