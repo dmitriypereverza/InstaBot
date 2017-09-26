@@ -17,7 +17,7 @@ from forms.Controllers.accountListController import AccountListController
 from forms.Ui_AccountDialog import Ui_AccountDialog
 from forms.Ui_MainForm import Ui_MainForm
 
-class MainForm(QtWidgets.QWidget):
+class MainForm(QtWidgets.QMainWindow):
     logSendSignal = pyqtSignal(str, name='logSendSignal')
     accountAddSignal = pyqtSignal(str, str, name='accountAddSignal')
     startBotAccount = pyqtSignal(str, name='startBotAccount')

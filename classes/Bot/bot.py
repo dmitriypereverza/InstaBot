@@ -3,7 +3,7 @@
 from threading import Thread
 
 from classes.Bot.Scheduler import Scheduler
-from classes.Database.Models.BotAccount import BotAccount
+from classes.Database.Models.Accounts import Accounts
 from classes.Instagram.InstaBot import InstaBot
 from classes.Instagram.instaUser import User
 from classes.Tasks.FollowAndUnfollow import FollowAndUnfollow
@@ -20,7 +20,7 @@ class AccountThread(Thread):
         self.scheduler = Scheduler()
 
     def run(self):
-        accountInfo = BotAccount.get(BotAccount.login == self.account_login)
+        accountInfo = Accounts.get(Accounts.login == self.account_login)
 
         instaBot = InstaBot(login=accountInfo.login, password=accountInfo.password)
         instaBot.login()

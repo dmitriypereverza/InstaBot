@@ -17,7 +17,6 @@ class AccountListController(UI_AccountList):
 
     def __init__(self):
         super().__init__()
-        self.setupUi()
         self.setInnerSignal()
 
     def getStartButton(self):
@@ -62,4 +61,4 @@ class AccountListController(UI_AccountList):
 
         pixmap = QPixmap(imgPath._str)
         if not pixmap.isNull():
-            self.getLableElement().setPixmap(pixmap.scaled(48, 48))
+            self.getLableElement().setPixmap(pixmap.scaled(100, 100))

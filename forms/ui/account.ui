@@ -997,9 +997,7 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../../resourses.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>radioButton_3</sender>

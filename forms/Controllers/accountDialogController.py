@@ -75,7 +75,6 @@ class AccountDialogController(QtWidgets.QDialog):
     def __init__(self, login):
         super().__init__()
         self.ui = Ui_AccountDialog()
-        self.ui.setupUi(self.ui)
         self.account = User(InstaBot().getUserInfoByLogin(login))
         self.resultDialog = {}
         self.settingsContainer = {'userSource': {}}
