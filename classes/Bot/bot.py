@@ -27,26 +27,7 @@ class AccountThread(Thread):
                        .join(Tasks) \
                        .where(Accounts.login == self.account_login))
 
-        userSource = {
-            'type': '',
-            'filePath': '',
-        }
-        for x in accountInfo:
-            if x.tasks.source_user_list_active:
-                userSource['type'] = 'user_list'
-                userSource['filePath'] = x.tasks.source_user_list_file_path
-            if x.tasks.source_hashtag_list_active:
-                userSource['type'] = 'hashTag'
-                userSource['filePath'] = x.tasks.source_hashtag_list_file_path
-            if x.tasks.source_geo_list_active:
-                userSource['type'] = 'geo'
-                userSource['filePath'] = x.tasks.source_geo_list_file_path
-            if x.tasks.source_follower_list_active:
-                userSource['type'] = 'followers'
-                userSource['filePath'] = x.tasks.source_follower_list_file_path
-            if x.tasks.source_follow_by_list_active:
-                userSource['type'] = 'followedBy'
-                userSource['filePath'] = x.tasks.source_follow_by_list_file_path
+        settings = self.getSettings(accountInfo)
 
 
         instaBot = InstaBot(login=accountInfo[0].login, password=accountInfo[0].password)
@@ -55,7 +36,7 @@ class AccountThread(Thread):
         self.scheduler.addTask(
             TraditionalFollowing(instaBot)
                 .setDelay(45, 55)
-                .setUserSource(HashTagUserSource(source=userSource['filePath']))
+                .setUserSource(HashTagUserSource(source=settings['userSource']['filePath']))
         )
 
         while self.isWorking:
@@ -63,6 +44,59 @@ class AccountThread(Thread):
 
         print('Bot stopped.')
         self.finishBotAccountSignal.emit(accountInfo.id)
+
+    def getSettings(self, accountInfo):
+        settings = {
+            'userSource': {
+                'type': '',
+                'filePath': '',
+            },
+            'like': {
+                'needLike': '',
+                'firstLike': '',
+                'limit': '',
+                'count': '',
+                'range': '',
+            },
+            'needFollow': '',
+            'isCycleLoop': '',
+            'comment': {
+                'needComment': '',
+                'source': '',
+            }
+        }
+        for x in accountInfo:
+            if x.task.need_like:
+                settings['like']['needLike'] = True
+                settings['like']['firstLike'] = x.task.first_like
+                settings['like']['limit'] = x.task.limit_like
+                settings['like']['count'] = x.task.count_like
+                settings['like']['range'] = x.task.range_like
+
+            settings['needFollow'] = x.task.need_follow
+            settings['isCycleLoop'] = x.task.is_cycleLoop
+
+            if x.task.need_comment:
+                settings['comment']['needComment'] = x.task.need_comment
+                settings['comment']['source'] = x.task.comment_file_path
+
+            if x.tasks.source_user_list_active:
+                settings['userSource']['type'] = 'user_list'
+                settings['userSource']['filePath'] = x.tasks.source_user_list_file_path
+            if x.tasks.source_hashtag_list_active:
+                settings['userSource']['type'] = 'hashTag'
+                settings['userSource']['filePath'] = x.tasks.source_hashtag_list_file_path
+            if x.tasks.source_geo_list_active:
+                settings['userSource']['type'] = 'geo'
+                settings['userSource']['filePath'] = x.tasks.source_geo_list_file_path
+            if x.tasks.source_follower_list_active:
+                settings['userSource']['type'] = 'followers'
+                settings['userSource']['filePath'] = x.tasks.source_follower_list_file_path
+            if x.tasks.source_follow_by_list_active:
+                settings['userSource']['type'] = 'followedBy'
+                settings['userSource']['filePath'] = x.tasks.source_follow_by_list_file_path
+
+            return settings
 
 
     def join(self, timeout=None):

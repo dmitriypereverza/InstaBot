@@ -57,28 +57,3 @@ class TraditionalFollowing(BaseTask):
             for number in sample(range(1, lastMediaRange), likeCount):
                 likeListId.append(currentUser.media[number]['id'])
         return likeListId
-
-    def getNextTag(self):
-        self.tagsGenerator = cycle(self._tagsList) if not self.tagsGenerator else self.tagsGenerator
-        return next(self.tagsGenerator)
-
-    def getNextUser(self) -> User:
-        return self._usersList.pop()
-
-    def getUsersByTag(self, tag):
-        return list(map(
-            lambda x: User(self._insta.getUserInfoByLogin(x)),
-            self._insta.getUserNamesByTag(tag)
-        ))
-
-    def getUsersFollowers(self, username):
-        return list(map(
-            lambda x: User(self._insta.getUserInfoByLogin(x)),
-            self._insta.getUserFollowers(username, 50)
-        ))
-
-    def getUsersByLocation(self, locationId):
-        return list(map(
-            lambda x: User(self._insta.getUserInfoByLogin(x)),
-            self._insta.getUsersByLocation(locationId)
-        ))

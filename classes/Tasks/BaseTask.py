@@ -6,6 +6,7 @@ import time
 
 from classes.Exeptions.exeptions import NotOverrideMethodExeption, EmptyUserListExeption
 from classes.Instagram.InstaBot import InstaBot
+from classes.Instagram.instaUser import User
 from classes.UserSource.UserSources import BaseUserSource
 
 class BaseTask:
@@ -28,7 +29,7 @@ class BaseTask:
         else:
             time.sleep(1)
 
-    def runTask(self):
+    def runTask(self, user: User):
         raise NotOverrideMethodExeption('Do not overided method: runTask()')
 
     def getLimit(self):
