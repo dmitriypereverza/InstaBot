@@ -14,7 +14,6 @@ from classes.Log.Loggers.TextEditLogger import TextEditLogger
 from classes.Thread.threadPull import ThreadsPull
 from forms.Controllers.accountDialogController import AccountDialogController
 from forms.Controllers.accountListController import AccountListController
-from forms.Ui_AccountDialog import Ui_AccountDialog
 from forms.Ui_MainForm import Ui_MainForm
 
 class MainForm(QtWidgets.QMainWindow):
@@ -52,8 +51,7 @@ class MainForm(QtWidgets.QMainWindow):
     def open_account_dialog(self, item: QListWidgetItem):
         itemWidget = self.ui.listWidget.itemWidget(item)
         dialog = AccountDialogController(itemWidget.getTitleElement().text())
-        data = dialog.getData()
-        print(data)
+        dialog.ui.exec_()
 
     def fillAccountList(self):
         AccountManager(self.accountAddSignal).fillUIAccountList()

@@ -2,8 +2,9 @@
 from functools import partial
 from pathlib import Path
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets, QtGui, QtSql
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtSql import QSqlTableModel
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 import config
@@ -24,54 +25,49 @@ class AccountDialogController(QtWidgets.QDialog):
             'UserList': {
                 'radio': 'radioButton_3',
                 'source_type': 'file',
-                'fileName': 'label_38',
+                'fileName': 'lineEdit_6',
                 'source': 'toolButton_2',
             },
             'Hashtags': {
                 'radio': 'radioButton_4',
                 'source_type': 'file',
-                'fileName': 'label_39',
+                'fileName': 'lineEdit_7',
                 'source': 'toolButton_3',
             },
             'Geo': {
                 'radio': 'radioButton_5',
                 'source_type': 'file',
-                'fileName': 'label_40',
+                'fileName': 'lineEdit_4',
                 'source': 'toolButton_4',
             },
             'Follows': {
                 'radio': 'radioButton',
-                'source_type': 'text',
-                'source': 'lineEdit_4',
+                'source_type': 'file',
+                'fileName': 'lineEdit_5',
+                'source': 'toolButton_5',
             },
             'FollowedBy': {
                 'radio': 'radioButton_2',
-                'source_type': 'text',
-                'source': 'lineEdit_5',
+                'source_type': 'file',
+                'fileName': 'lineEdit_8',
+                'source': 'toolButton_6',
             },
         },
+        'like': {
+            'needLike': 'groupBox_3',
+            'firstLike': 'checkBox',
+            'limit': 'lineEdit_10',
+            'count': 'lineEdit_11',
+            'range': 'lineEdit_12',
+        },
+        'needFollow': 'groupBox_4',
+        'isCycleLoop': 'checkBox_2',
+        'comment': {
+            'needComment': 'groupBox_5',
+            'editField': 'lineEdit_9',
+        }
     }
-    # settingsContainer = {
-    #     'userSource': {
-    #     },
-    #     'like': {
-    #         'needLike': True,
-    #         'firstLike': True,
-    #         'limit': '',
-    #         'count': '',
-    #         'range': '',
-    #     },
-    #     'follows': {
-    #         'needFollow': True,
-    #     },
-    #     'comments': {
-    #         'needComment': True,
-    #         'commentFilePath': '',
-    #     },
-    #     'other': {
-    #         'isCycleLoop': True,
-    #     }
-    # }
+
     def __init__(self, login):
         super().__init__()
         self.ui = Ui_AccountDialog()
@@ -81,7 +77,50 @@ class AccountDialogController(QtWidgets.QDialog):
         self.loadAccountInfo()
         self.setInnerConnects()
 
+        self.db = self.getConnection()
+        self.mapper = self.createMapper()
+
         self.initErrorMsg()
+
+    def getConnection(self):
+        db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
+        db.setDatabaseName('/home/west920/PycharmProjects/InstaBot/classes/Database/people.db')
+        db.open()
+        return db
+
+    def createMapper(self):
+        model = QSqlTableModel()
+        model.setTable('tasks')
+        model.setFilter('account_id = 1')
+        model.select()
+
+        mapModel = QtWidgets.QDataWidgetMapper()
+        mapModel.setModel(model)
+
+        mapModel.addMapping(self.getAttr('userSource', 'UserList', 'radio'), 3)
+        mapModel.addMapping(self.getAttr('userSource', 'UserList', 'fileName'), 4)
+        mapModel.addMapping(self.getAttr('userSource', 'Hashtags', 'radio'), 5)
+        mapModel.addMapping(self.getAttr('userSource', 'Hashtags', 'fileName'), 6)
+        mapModel.addMapping(self.getAttr('userSource', 'Geo', 'radio'), 7)
+        mapModel.addMapping(self.getAttr('userSource', 'Geo', 'fileName'), 8)
+        mapModel.addMapping(self.getAttr('userSource', 'Follows', 'radio'), 9)
+        mapModel.addMapping(self.getAttr('userSource', 'Follows', 'fileName'), 10)
+        mapModel.addMapping(self.getAttr('userSource', 'FollowedBy', 'radio'), 11)
+        mapModel.addMapping(self.getAttr('userSource', 'FollowedBy', 'fileName'), 12)
+
+        mapModel.addMapping(self.getAttr('like', 'needLike'), 13)
+        mapModel.addMapping(self.getAttr('like', 'firstLike'), 14)
+        mapModel.addMapping(self.getAttr('like', 'limit'), 15)
+        mapModel.addMapping(self.getAttr('like', 'count'), 16)
+        mapModel.addMapping(self.getAttr('like', 'range'), 17)
+        mapModel.addMapping(self.getAttr('needFollow'), 18)
+        mapModel.addMapping(self.getAttr('comment', 'needComment'), 19)
+        mapModel.addMapping(self.getAttr('comment', 'editField'), 20)
+        mapModel.addMapping(self.getAttr('isCycleLoop'), 21)
+        mapModel.setSubmitPolicy(QtWidgets.QDataWidgetMapper.ManualSubmit)
+        mapModel.toFirst()
+
+        return mapModel
 
     def initErrorMsg(self):
         self.error_msg = QMessageBox()
@@ -100,11 +139,10 @@ class AccountDialogController(QtWidgets.QDialog):
     def accept(self):
         self.resultDialog = self.getSettings()
         if self.resultDialog:
+            self.mapper.submit()
+            self.db.close()
             self.ui.accept()
 
-    def getData(self):
-        result = self.ui.exec_()
-        return self.resultDialog, result == QDialog.Accepted
 
     def getSettings(self):
         resultDialog = {}
@@ -118,17 +156,10 @@ class AccountDialogController(QtWidgets.QDialog):
     def getUserSourseResult(self):
         for key, value in AccountDialogController.listFields['userSource'].items():
             if self.getAttr('userSource', key, 'radio').isChecked():
-                if value['source_type'] == 'file':
-                    if key in self.settingsContainer['userSource']:
-                        return dict(type=key, value=self.settingsContainer['userSource'][key]['value'])
-                    self.error_msg.setText("Заполните все поля источника данных")
-                    self.error_msg.exec_()
-                elif value['source_type'] == 'text':
-                    text = self.getAttr('userSource', key, 'source').text()
-                    if text:
-                        return dict(type=key, value=text)
-                    self.error_msg.setText("Заполните все поля источника данных")
-                    self.error_msg.exec_()
+                if key in self.settingsContainer['userSource']:
+                    return dict(type=key, value=self.settingsContainer['userSource'][key]['value'])
+                self.error_msg.setText("Заполните все поля источника данных")
+                self.error_msg.exec_()
 
 
     def getFile(self, type):
