@@ -3,8 +3,9 @@
 
 import sys
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtSql
 from PyQt5.QtCore import pyqtSignal
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QListWidgetItem
 
 from classes.Accounts.AccountManager import AccountManager
@@ -18,7 +19,7 @@ from forms.Ui_MainForm import Ui_MainForm
 
 class MainForm(QtWidgets.QMainWindow):
     logSendSignal = pyqtSignal(str, name='logSendSignal')
-    accountAddSignal = pyqtSignal(str, str, name='accountAddSignal')
+    accountAddSignal = pyqtSignal(str, str, int, name='accountAddSignal')
     startBotAccount = pyqtSignal(str, name='startBotAccount')
     finishBotAccount = pyqtSignal(int, name='finishBotAccount')
 
@@ -26,10 +27,16 @@ class MainForm(QtWidgets.QMainWindow):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_MainForm()
         self.ui.setupUi(self)
+        self.openConnection()
         self.registerForeignSignals()
         self.registerInnerSignals()
 
         self.fillAccountList()
+
+    def openConnection(self):
+        db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
+        db.setDatabaseName('/home/west920/PycharmProjects/InstaBot/classes/Database/people.db')
+        db.open()
 
     def registerInnerSignals(self):
         self.ui.pushButton_2.clicked.connect(self.start_bot)
@@ -49,14 +56,13 @@ class MainForm(QtWidgets.QMainWindow):
         self.ui.textEdit.insertHtml(text)
 
     def open_account_dialog(self, item: QListWidgetItem):
-        itemWidget = self.ui.listWidget.itemWidget(item)
-        dialog = AccountDialogController(itemWidget.getTitleElement().text())
+        dialog = AccountDialogController(item.data(QtCore.Qt.UserRole))
         dialog.ui.exec_()
 
     def fillAccountList(self):
         AccountManager(self.accountAddSignal).fillUIAccountList()
 
-    def add_account_row(self, name, icon):
+    def add_account_row(self, name, icon, id):
         myQCustomQWidget = AccountListController()
         myQCustomQWidget.setTextUp(name)
         myQCustomQWidget.setStatus('Готов к запуску')
@@ -65,6 +71,8 @@ class MainForm(QtWidgets.QMainWindow):
 
         myQListWidgetItem = QtWidgets.QListWidgetItem(self.ui.listWidget)
         myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
+        myQListWidgetItem.setData(QtCore.Qt.UserRole, id)
+
         self.ui.listWidget.addItem(myQListWidgetItem)
         self.ui.listWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
 

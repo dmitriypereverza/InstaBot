@@ -8,6 +8,7 @@ from PyQt5.QtSql import QSqlTableModel
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 import config
+from classes.Database.Models.Accounts import Accounts
 from classes.Instagram.InstaBot import InstaBot
 from classes.Instagram.instaUser import User
 from forms.Ui_AccountDialog import Ui_AccountDialog
@@ -68,36 +69,34 @@ class AccountDialogController(QtWidgets.QDialog):
         }
     }
 
-    def __init__(self, login):
+    def __init__(self, account_id):
         super().__init__()
         self.ui = Ui_AccountDialog()
-        self.account = User(InstaBot().getUserInfoByLogin(login))
+        self.account = self.getAccount(account_id)
         self.resultDialog = {}
         self.settingsContainer = {'userSource': {}}
         self.loadAccountInfo()
         self.setInnerConnects()
 
-        self.db = self.getConnection()
-        self.mapper = self.createMapper()
+        self.mapper = self.createMapper(account_id)
 
         self.initErrorMsg()
 
-    def getConnection(self):
-        db = QtSql.QSqlDatabase.addDatabase('QSQLITE')
-        db.setDatabaseName('/home/west920/PycharmProjects/InstaBot/classes/Database/people.db')
-        db.open()
-        return db
+    def getAccount(self, id):
+        account = Accounts.get(id=id)
+        return User(InstaBot().getUserInfoByLogin(account.login))
 
-    def createMapper(self):
+
+    def createMapper(self, account_id):
         model = QSqlTableModel()
         model.setTable('tasks')
-        model.setFilter('account_id = 1')
+        model.setFilter('account_id = ' + str(account_id))
         model.select()
 
         mapModel = QtWidgets.QDataWidgetMapper()
         mapModel.setModel(model)
 
-        mapModel.addMapping(self.getAttr('userSource', 'UserList', 'radio'), 3)
+        mapModel.addMapping(self.getAttr('userSource', 'UserList', 'radio'), model.fieldIndex('source_user_list_active'))
         mapModel.addMapping(self.getAttr('userSource', 'UserList', 'fileName'), 4)
         mapModel.addMapping(self.getAttr('userSource', 'Hashtags', 'radio'), 5)
         mapModel.addMapping(self.getAttr('userSource', 'Hashtags', 'fileName'), 6)
@@ -137,21 +136,8 @@ class AccountDialogController(QtWidgets.QDialog):
                 self.getAttr('userSource', key, 'source').clicked.connect(partial(self.getFile, key))
 
     def accept(self):
-        self.resultDialog = self.getSettings()
-        if self.resultDialog:
-            self.mapper.submit()
-            self.db.close()
-            self.ui.accept()
-
-
-    def getSettings(self):
-        resultDialog = {}
-
-        userSourseResult = self.getUserSourseResult()
-        if userSourseResult:
-            resultDialog['sourceUser'] = userSourseResult
-
-        return resultDialog
+        self.mapper.submit()
+        self.ui.accept()
 
     def getUserSourseResult(self):
         for key, value in AccountDialogController.listFields['userSource'].items():
