@@ -6,7 +6,7 @@ from time import sleep
 
 from classes.Instagram.instaUser import User
 from classes.Log.Log import Logger
-from classes.Sourse.commentTemplateList import templateListEn
+from classes.Source.commentTemplateList import templateListEn
 from classes.Tasks.BaseTask import BaseTask
 from classes.TextGenerator.MsgGenerator import MsgGenerator
 
@@ -16,33 +16,27 @@ class TraditionalFollowing(BaseTask):
         self.userIndex = 0
         self.tagsGenerator = None
 
-    def runTask(self):
-        if not self._usersList:
-            # self.usersList = self.getUsersByLocation(225196070)
-            # self.usersList = self.getUsersFollowers('fudduxujd')
-            self._usersList = self.getUsersByTag(self.getNextTag())
-
-        currentUser = self.getNextUser()
-        if not currentUser:
+    def runTask(self, user: User):
+        if not user:
             return None
 
-        if currentUser.isNormal():
-            Logger().log('Enter to user: {}'.format(currentUser.username))
-            Logger().log('User link: https://www.instagram.com/{}/'.format(currentUser.username))
+        if user.isNormal():
+            Logger().log('Enter to user: {}'.format(user.username))
+            Logger().log('User link: https://www.instagram.com/{}/'.format(user.username))
 
-            if not currentUser.isFollower:
-                likeList = self.getLikeFromLastMedia(currentUser, 1, 1)
+            if not user.isFollower:
+                likeList = self.getLikeFromLastMedia(user, 1, 1)
                 for mediaId in likeList:
                     self._insta.like(mediaId)
                     sleep(7)
 
                 # self.insta.follow(currentUser.id)
-                self.writeComment(currentUser)
+                self.writeComment(user)
 
             self.setNextExec()
         else:
-            Logger().log('Skip user #%d: %s' % (self.userIndex - 1, currentUser.username))
-            Logger().log('User link: ' + "https://www.instagram.com/%s/" % currentUser.username)
+            Logger().log('Skip user #%d: %s' % (self.userIndex - 1, user.username))
+            Logger().log('User link: ' + "https://www.instagram.com/%s/" % user.username)
 
         Logger().log('\n')
 

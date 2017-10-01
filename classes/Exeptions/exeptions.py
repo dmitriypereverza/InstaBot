@@ -6,3 +6,6 @@ class NotOverrideMethodExeption(Exception):
 
 class TypeErrorExeption(Exception):
     pass
+
+class EmptyUserListExeption(Exception):
+    pass

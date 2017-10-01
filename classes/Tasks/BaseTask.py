@@ -1,20 +1,18 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import abc
 import random
 import time
 
-from classes.Exeptions.exeptions import NotOverrideMethodExeption
-from  classes.Instagram.InstaBot import InstaBot
-from classes.Log.Log import Logger
+from classes.Exeptions.exeptions import NotOverrideMethodExeption, EmptyUserListExeption
+from classes.Instagram.InstaBot import InstaBot
+from classes.UserSource.UserSources import BaseUserSource
 
 class BaseTask:
     def __init__(self, insta):
         """:type insta: InstaBot"""
-        self._tagsList = []
         self._insta = insta
-        self._usersList = []
+        self._usersSource = None
         self._next_exec = []
         self._delay = [35, 55]
         self._limit = 0
@@ -23,10 +21,12 @@ class BaseTask:
 
     def exec(self):
         if self.isDelayExpired() and not self.isLimitExpired():
-            self.runTask()
+            user = self.getUserSource().getNext()
+            if not user:
+                raise EmptyUserListExeption()
+            self.runTask(user)
         else:
             time.sleep(1)
-            # self._showTime and Logger.loadingText('Осталось {} секунд'.format(round(self.getTimeLeft(), 0)))
 
     def runTask(self):
         raise NotOverrideMethodExeption('Do not overided method: runTask()')
@@ -63,10 +63,10 @@ class BaseTask:
         print(self.__class__.__name__ + ' Wait: ' + str(currentDelay))
         self._next_exec = time.time() + currentDelay
 
-    def setUsersList(self, users):
-        self._usersList = users
+    def setUserSource(self, userSource: BaseUserSource):
+        self._usersSource = userSource
+        self._usersSource.setInstaConnect(self._insta)
         return self
 
-    def setTagsList(self, tags):
-        self._tagsList = tags
-        return self
+    def getUserSource(self) -> BaseUserSource:
+        return self._usersSource

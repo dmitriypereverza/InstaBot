@@ -150,8 +150,7 @@ class AccountDialogController(QtWidgets.QDialog):
 
     def getFile(self, type):
         fname = QFileDialog.getOpenFileName(self, 'Open file', '', "Text files (*.txt)")
-        self.settingsContainer['userSource'][type] = {'value': fname[0]}
-        self.setAttrText(self.getAttr('userSource', type, 'fileName'), Path(fname[0]).name)
+        self.setAttrText(self.getAttr('userSource', type, 'fileName'), fname[0])
 
     def loadAccountInfo(self):
         self.setIcon()

@@ -3,7 +3,7 @@
 import re
 from collections import namedtuple
 from classes.Instagram import InstaQuery
-from classes.Sourse.unwanted import unwanted_username_list
+from classes.Source.unwanted import unwanted_username_list
 
 POPULAR_FOLLOWS_COUNT = 500
 FAKE_COEFICIENT = 3
