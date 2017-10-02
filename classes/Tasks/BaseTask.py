@@ -7,6 +7,7 @@ import time
 from classes.Exeptions.exeptions import NotOverrideMethodExeption, EmptyUserListExeption
 from classes.Instagram.InstaBot import InstaBot
 from classes.Instagram.instaUser import User
+from classes.TextGenerator.BaseCommentGenerator import BaseCommentGenerator
 from classes.UserSource.UserSources import BaseUserSource
 
 class BaseTask:
@@ -14,6 +15,10 @@ class BaseTask:
         """:type insta: InstaBot"""
         self._insta = insta
         self._usersSource = None
+        self._commentGenerator = None
+        self._needComment = False
+        self._needFollow = False
+        self._likeSettings = []
         self._next_exec = []
         self._delay = [35, 55]
         self._limit = 0
@@ -71,3 +76,31 @@ class BaseTask:
 
     def getUserSource(self) -> BaseUserSource:
         return self._usersSource
+
+    def setLikeSettings(self, settings):
+        self._likeSettings = settings
+        return self
+
+    def getLikeSettings(self):
+        return self._likeSettings
+
+    def needComment(self, *args):
+        if len(args) > 0:
+            self._needComment = args[0]
+            return self
+        else:
+            return self._needComment
+
+    def needFollow(self, *args):
+        if len(args) > 0:
+            self._needFollow = args[0]
+            return self
+        else:
+            return self._needFollow
+
+    def setCommentGenerator(self, commentGenerator: BaseCommentGenerator):
+        self._commentGenerator = commentGenerator
+        return self
+
+    def getCommentGenerator(self) -> BaseCommentGenerator:
+        return self._commentGenerator

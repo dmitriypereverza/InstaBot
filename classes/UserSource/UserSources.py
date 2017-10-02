@@ -63,11 +63,18 @@ class HashTagUserSource(BaseUserSource):
         self._userList = []
 
     def getNext(self):
-        hashTag = next(self._userList)
-        if not hashTag:
-            self._userList = [x for x in self.getUsersByTag(self.getNextTag())]
+        user = self.getNextUser()
+        if not user:
+            self._userList = (x for x in self.getUsersByTag(self.getNextTag()))
+            user = self.getNextUser()
 
-        return hashTag
+        return user
+
+    def getNextUser(self):
+        try:
+            return next(self._userList)
+        except:
+            return None
 
     def getNextTag(self):
         if not self.tagsGenerator:

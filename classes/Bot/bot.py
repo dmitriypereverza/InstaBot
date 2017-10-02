@@ -9,6 +9,8 @@ from classes.Instagram.InstaBot import InstaBot
 from classes.Instagram.instaUser import User
 from classes.Tasks.FollowAndUnfollow import FollowAndUnfollow
 from classes.Tasks.TraditionalFollowing import TraditionalFollowing
+from classes.TextGenerator.MsgGenerator import MsgGenerator
+from classes.UserSource.UserSourceContainer import UserSourceContainer
 from classes.UserSource.UserSources import HashTagUserSource
 
 class AccountThread(Thread):
@@ -29,6 +31,9 @@ class AccountThread(Thread):
 
         settings = self.getSettings(accountInfo)
 
+        UserSource = UserSourceContainer().getUserSource(settings['userSource']['type'])
+        UserSource = UserSource(settings['userSource']['filePath'])
+        UserSource.isCycle(settings['isCycleLoop'])
 
         instaBot = InstaBot(login=accountInfo[0].login, password=accountInfo[0].password)
         instaBot.login()
@@ -36,14 +41,18 @@ class AccountThread(Thread):
         self.scheduler.addTask(
             TraditionalFollowing(instaBot)
                 .setDelay(45, 55)
-                .setUserSource(HashTagUserSource(source=settings['userSource']['filePath']))
+                .setUserSource(UserSource)
+                .setLikeSettings(settings['like'])
+                .needFollow(settings['needFollow'])
+                .needComment(settings['comment']['needComment'])
+                .setCommentGenerator(MsgGenerator(settings['comment']['source'], type=MsgGenerator.TYPE_FILE))
         )
 
         while self.isWorking:
             self.scheduler.start()
 
         print('Bot stopped.')
-        self.finishBotAccountSignal.emit(accountInfo.id)
+        self.finishBotAccountSignal.emit(accountInfo[0].id)
 
     def getSettings(self, accountInfo):
         settings = {
@@ -66,19 +75,19 @@ class AccountThread(Thread):
             }
         }
         for x in accountInfo:
-            if x.task.need_like:
+            if x.tasks.need_like:
                 settings['like']['needLike'] = True
-                settings['like']['firstLike'] = x.task.first_like
-                settings['like']['limit'] = x.task.limit_like
-                settings['like']['count'] = x.task.count_like
-                settings['like']['range'] = x.task.range_like
+                settings['like']['firstLike'] = x.tasks.first_like
+                settings['like']['limit'] = x.tasks.limit_like
+                settings['like']['count'] = x.tasks.count_like
+                settings['like']['range'] = x.tasks.range_like
 
-            settings['needFollow'] = x.task.need_follow
-            settings['isCycleLoop'] = x.task.is_cycleLoop
+            settings['needFollow'] = x.tasks.need_follow
+            settings['isCycleLoop'] = x.tasks.is_cycleLoop
 
-            if x.task.need_comment:
-                settings['comment']['needComment'] = x.task.need_comment
-                settings['comment']['source'] = x.task.comment_file_path
+            if x.tasks.need_comment:
+                settings['comment']['needComment'] = x.tasks.need_comment
+                settings['comment']['source'] = x.tasks.comment_file_path
 
             if x.tasks.source_user_list_active:
                 settings['userSource']['type'] = 'user_list'

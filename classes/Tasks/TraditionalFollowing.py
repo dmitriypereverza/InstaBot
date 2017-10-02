@@ -25,13 +25,25 @@ class TraditionalFollowing(BaseTask):
             Logger().log('User link: https://www.instagram.com/{}/'.format(user.username))
 
             if not user.isFollower:
-                likeList = self.getLikeFromLastMedia(user, 1, 1)
-                for mediaId in likeList:
-                    self._insta.like(mediaId)
-                    sleep(7)
+                if self.getLikeSettings()['needLike']:
+                    likeList = self.getLikeFromLastMedia(
+                        user,
+                        self.getLikeSettings()['count'],
+                        self.getLikeSettings()['range'],
+                        like_first=self.getLikeSettings()['firstLike']
+                    )
+                    for mediaId in likeList:
+                        self._insta.like(mediaId)
+                        sleep(7)
 
-                # self.insta.follow(currentUser.id)
-                self.writeComment(user)
+                if self.needFollow():
+                    self._insta.follow(user.id)
+
+                if self.needComment():
+                    self._insta.comment(
+                        user.media[0]['id'],
+                        self.getCommentGenerator().generate()
+                    )
 
             self.setNextExec()
         else:
@@ -40,20 +52,21 @@ class TraditionalFollowing(BaseTask):
 
         Logger().log('\n')
 
-    def writeComment(self, currentUser: User):
-        comment = MsgGenerator(templateListEn).generate()
-        self._insta.comment(currentUser.media[0]['id'], comment)
-
-    def getLikeFromLastMedia(self, currentUser: User, lastMediaRange, likeCount):
+    def getLikeFromLastMedia(self, currentUser: User, likeCount, lastMediaRange, like_first=False):
         countMedia = len(currentUser.media)
         if likeCount > countMedia or likeCount > lastMediaRange:
             likeCount = min((countMedia, lastMediaRange))
         if countMedia < lastMediaRange:
             lastMediaRange = countMedia
         likeListId = []
-        if lastMediaRange == 1:
+        minLikeMediaNumber = 1
+        if like_first:
+            likeListId.append(currentUser.media[minLikeMediaNumber]['id'])
+            minLikeMediaNumber += 1
+
+        if lastMediaRange == 1 and not like_first:
             likeListId.append(currentUser.media[1]['id'])
         else:
-            for number in sample(range(1, lastMediaRange), likeCount):
+            for number in sample(range(minLikeMediaNumber, lastMediaRange), likeCount):
                 likeListId.append(currentUser.media[number]['id'])
         return likeListId
