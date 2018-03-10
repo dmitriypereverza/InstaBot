@@ -1,15 +1,16 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import json
+import inject
 import requests
-
+import DIConfig
 from classes.Connection.requestHandlerMixin import RequestHandlerMixin
-from classes.Log.Log import Logger
 
 class RequestFacade(RequestHandlerMixin):
     user_agent = ("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 "
                   "(KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36")
     accept_language = 'ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4'
+    logger = inject.attr(DIConfig.Logger)
 
     def __init__(self):
         self.session = requests.Session()
@@ -38,7 +39,7 @@ class RequestFacade(RequestHandlerMixin):
     def get(self, *args, **kwargs):
         response = self.session.get(*args, **kwargs)
         if response.status_code != 200:
-            Logger().error('Can\'t do get request. Status code: {}'.format(response.status_code))
+            self.logger.error('Can\'t do get request. Status code: {}'.format(response.status_code))
         return response
 
     def headersUpdate(self, *args, **kwargs):
@@ -47,13 +48,13 @@ class RequestFacade(RequestHandlerMixin):
     def post(self, *args, **kwargs):
         response = self.session.post(*args, **kwargs)
         if response.status_code != 200:
-            Logger().error('Can\'t do post request. Status code: {}'.format(response.status_code))
+            self.logger.error('Can\'t do post request. Status code: {}'.format(response.status_code))
         return response
 
     def getJson(self, url):
         response = self.get(url)
         if response.status_code != 200:
-            Logger().error('Can\'t get json. Status code: ' + response.status_code)
+            self.logger.error('Can\'t get json. Status code: ' + response.status_code)
         return json.loads(response.text)
 
 

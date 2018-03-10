@@ -1,11 +1,35 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import sys
-from PyQt5 import QtWidgets
-from forms.Controllers.mainController import MainForm
+import config
+from classes.Bot.Scheduler import Scheduler
+from classes.Instagram.InstaBot import InstaBot
+from classes.Source.commentTemplateList import templateListEn
+from classes.Tasks.TraditionalFollowing import TraditionalFollowing
+from classes.TextGenerator.MsgGenerator import MsgGenerator
+from classes.UserSource.UserSourceBuilder import UserSourceBuilder
+from classes.UserSource import UserSources
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    my_app = MainForm()
-    my_app.show()
-    sys.exit(app.exec_())
+    instaBot = InstaBot(login=config.login, password=config.password)
+    instaBot.login()
+    scheduler = Scheduler()
+
+    scheduler.addTask(
+        TraditionalFollowing(instaBot)
+            .setDelay(45, 55)
+            .setUserSource(
+                UserSourceBuilder() \
+                    .setType('hashTag') \
+                    .setSource(['draw', 'paint'], UserSources.LIST_TYPE) \
+                    .setIsCycle(True)
+                    .get()
+        ).setLikeSettings({
+                'needLike': True,
+                'count': 2,
+                'range': 6,
+                'firstLike': True,
+            })
+            .needFollow(True)
+            .needComment(True)
+            .setCommentGenerator(MsgGenerator(templateListEn, type=MsgGenerator.TYPE_LIST))
+    ).enableTaskLoop().start()

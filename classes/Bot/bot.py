@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 from threading import Thread
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 from classes.Bot.Scheduler import Scheduler
 from classes.Database.Models.Accounts import Accounts
@@ -31,9 +34,9 @@ class AccountThread(Thread):
 
         settings = self.getSettings(accountInfo)
 
-        UserSource = UserSourceContainer().getUserSource(settings['userSource']['type'])
-        UserSource = UserSource(settings['userSource']['filePath'])
-        UserSource.isCycle(settings['isCycleLoop'])
+        userSource = UserSourceContainer().getUserSource(settings['userSource']['type'])
+        userSource = userSource(settings['userSource']['filePath'])
+        userSource.isCycle(settings['isCycleLoop'])
 
         instaBot = InstaBot(login=accountInfo[0].login, password=accountInfo[0].password)
         instaBot.login()
@@ -41,7 +44,7 @@ class AccountThread(Thread):
         self.scheduler.addTask(
             TraditionalFollowing(instaBot)
                 .setDelay(45, 55)
-                .setUserSource(UserSource)
+                .setUserSource(userSource)
                 .setLikeSettings(settings['like'])
                 .needFollow(settings['needFollow'])
                 .needComment(settings['comment']['needComment'])

@@ -1,10 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-from itertools import cycle
-from  classes.Instagram.InstaBot import InstaBot
-from classes.Exeptions.exeptions import NotOverrideMethodExeption
-from classes.Instagram.instaUser import User
-from classes.UserSource.UserSources import UserList, HashTagUserSource, GeoUserSource, FollowersUserSource
+from classes.UserSource.UserSources import UserList, \
+    HashTagUserSource, GeoUserSource, FollowersUserSource
 
 class UserSourceContainer:
     def __init__(self):
@@ -15,8 +12,8 @@ class UserSourceContainer:
             'followers': FollowersUserSource,
         }
 
-    def getUserSource(self, className):
-        if className in self._sourceConainer:
-            return self._sourceConainer[className]
+    def getUserSource(self, type):
+        if type in self._sourceConainer:
+            return self._sourceConainer[type]
         else:
-            return None
+            raise Exception('User source type {} not found'.format(type))

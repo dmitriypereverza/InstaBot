@@ -17,6 +17,7 @@ class Logger():
 
     def setLoggerType(self, logger: LoggerMixin):
         self.logger = logger
+        return self
 
     def log(self, *args, **kwargs):
         self.logger.log(*args, **kwargs)

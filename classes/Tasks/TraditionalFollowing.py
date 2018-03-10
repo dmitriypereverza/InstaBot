@@ -4,6 +4,9 @@ from itertools import cycle
 from random import sample
 from time import sleep
 
+import inject
+
+import DIConfig
 from classes.Instagram.instaUser import User
 from classes.Log.Log import Logger
 from classes.Source.commentTemplateList import templateListEn
@@ -15,14 +18,15 @@ class TraditionalFollowing(BaseTask):
         super().__init__(insta)
         self.userIndex = 0
         self.tagsGenerator = None
+        logger = inject.attr(DIConfig.Logger)
 
     def runTask(self, user: User):
         if not user:
             return None
 
         if user.isNormal():
-            Logger().log('Enter to user: {}'.format(user.username))
-            Logger().log('User link: https://www.instagram.com/{}/'.format(user.username))
+            self.logger.log('Enter to user: {}'.format(user.username))
+            self.logger.log('User link: https://www.instagram.com/{}/'.format(user.username))
 
             if not user.isFollower:
                 if self.getLikeSettings()['needLike']:
@@ -47,10 +51,10 @@ class TraditionalFollowing(BaseTask):
 
             self.setNextExec()
         else:
-            Logger().log('Skip user #%d: %s' % (self.userIndex - 1, user.username))
-            Logger().log('User link: ' + "https://www.instagram.com/%s/" % user.username)
+            self.logger.log('Skip user #%d: %s' % (self.userIndex - 1, user.username))
+            self.logger.log('User link: ' + "https://www.instagram.com/%s/" % user.username)
 
-        Logger().log('\n')
+        self.logger.log('\n')
 
     def getLikeFromLastMedia(self, currentUser: User, likeCount, lastMediaRange, like_first=False):
         countMedia = len(currentUser.media)
@@ -63,7 +67,8 @@ class TraditionalFollowing(BaseTask):
         if like_first:
             likeListId.append(currentUser.media[minLikeMediaNumber]['id'])
             minLikeMediaNumber += 1
-
+        if (lastMediaRange - minLikeMediaNumber) < likeCount:
+            likeCount = lastMediaRange - minLikeMediaNumber
         if lastMediaRange == 1 and not like_first:
             likeListId.append(currentUser.media[1]['id'])
         else:

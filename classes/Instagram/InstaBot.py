@@ -3,23 +3,26 @@
 import datetime
 import time
 import functools
+
+import inject
+
+import DIConfig
 from classes.Connection.instaConnector import InstaConnect
 from classes.Connection.request import RequestFacade
 from classes.Instagram import Endpoints, InstaQuery
 from classes.Instagram.instaUser import User
-from classes.Log.Log import Logger
 
 def checkConnectAndLogged(func):
     @functools.wraps(func)
     def inner(self, *args, **kwargs):
         if self.instaConnector.isConnected():
-            Logger().log("Try to exect {}() with params: {} {}.".format(func.__name__, args, kwargs))
+            self.logger.log("Try to exect {}() with params: {} {}.".format(func.__name__, args, kwargs))
             try:
                 return func(self, *args, **kwargs)
             except Exception as e:
-                Logger().error("Exception: {}; On get data from {}!".format(e, func.__name__))
+                self.logger.error("Exception: {}; On get data from {}!".format(e, func.__name__))
         else:
-            Logger().error("Not connect!")
+            self.logger.error("Not connect!")
     return inner
 
 def checkBan(func=None, *, minuteCount=60):
@@ -32,14 +35,15 @@ def checkBan(func=None, *, minuteCount=60):
             response = func(self, *args, **kwargs)
             if response.status_code == 400:
                 func.nextExec = time.time() + (60 * minuteCount)
-                Logger().error("Probably ban. Wait {} minute!".format(minuteCount))
+                self.logger.error("Probably ban. Wait {} minute!".format(minuteCount))
                 return None
             return response
-        Logger().error("Expiring ban time. Wait {} minute!".format((func.nextExec - time.time()) // 60))
+        self.logger.error("Expiring ban time. Wait {} minute!".format((func.nextExec - time.time()) // 60))
     return inner
 
 class InstaBot:
     ownerAccount = None
+    logger = inject.attr(DIConfig.Logger)
 
     def __init__(self, login=None, password=None):
         self.botStart = datetime.datetime.now()
@@ -96,7 +100,7 @@ class InstaBot:
     @checkConnectAndLogged
     def getMediaByTag(self, tag):
         all_data = self.requestManager.getJson(Endpoints.urlTag % tag)
-        return all_data['tag']['media']['nodes']
+        return all_data['graphql']['hashtag']['edge_hashtag_to_media']['edges']
 
     @checkConnectAndLogged
     def getUserFollowersByUserId(self, userId, limit):
@@ -116,7 +120,7 @@ class InstaBot:
     def getUserNamesByTag(self, tag):
         userNames = []
         for media in self.getMediaByTag(tag):
-            mediaInfo = InstaQuery.getMediaInfoByCode(media['code'])
+            mediaInfo = InstaQuery.getMediaInfoByCode(media['node']['shortcode'])
             if mediaInfo is not None:
                 userName = mediaInfo['shortcode_media']['owner']['username']
                 if userName not in userNames:

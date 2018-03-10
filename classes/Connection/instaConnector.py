@@ -1,13 +1,17 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+import inject
+
+import DIConfig
 from classes.Connection.requestHandlerMixin import RequestHandlerMixin
 from classes.Exeptions.exeptions import TypeErrorExeption
 from classes.Instagram import Endpoints
-from classes.Log.Log import Logger
 
 class InstaConnect:
     csrfToken = None
     loginSuccess = False
+    """:type logger LoggerMixin """
+    logger = inject.attr(DIConfig.Logger)
 
     def __init__(self, requestManager):
         if not isinstance(requestManager, RequestHandlerMixin):
@@ -33,10 +37,10 @@ class InstaConnect:
             finder = r.text.find(login)
             if finder != -1:
                 self.loginSuccess = True
-                Logger().success("Login like {} success!".format(login))
+                self.logger.success("Login like {} success!".format(login))
 
         else:
-            Logger().error("Incorrect login or password!")
+            self.logger.error("Incorrect login or password!")
 
     def logout(self):
         try:
@@ -44,7 +48,7 @@ class InstaConnect:
             self.requestManager.post(Endpoints.urlLogout, data = logoutPost)
             self.loginSuccess = False
         except Exception as e:
-            Logger().error("Logout error! " + e)
+            self.logger.error("Logout error! " + e)
 
     def isConnected(self):
         return self.loginSuccess

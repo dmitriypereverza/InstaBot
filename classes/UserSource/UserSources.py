@@ -43,11 +43,11 @@ class UserList(BaseUserSource):
         self.userListGenerator = None
 
     def getNext(self):
-        userName = self.getNextUserName()
+        userName = self._getNextUserName()
         if userName:
             return User(self._insta.getUserInfoByLogin(userName))
 
-    def getNextUserName(self):
+    def _getNextUserName(self):
         if not self.userListGenerator:
             if self.isCycle():
                 self.userListGenerator = cycle(self._listFromFile)

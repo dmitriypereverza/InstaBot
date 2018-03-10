@@ -4,6 +4,9 @@
 import random
 import time
 
+import inject
+
+import DIConfig
 from classes.Exeptions.exeptions import NotOverrideMethodExeption, EmptyUserListExeption
 from classes.Instagram.InstaBot import InstaBot
 from classes.Instagram.instaUser import User
@@ -11,6 +14,8 @@ from classes.TextGenerator.BaseCommentGenerator import BaseCommentGenerator
 from classes.UserSource.UserSources import BaseUserSource
 
 class BaseTask:
+    logger = inject.attr(DIConfig.Logger)
+
     def __init__(self, insta):
         """:type insta: InstaBot"""
         self._insta = insta
@@ -18,7 +23,12 @@ class BaseTask:
         self._commentGenerator = None
         self._needComment = False
         self._needFollow = False
-        self._likeSettings = []
+        self._likeSettings = {
+            'needLike': False,
+            'count': 2,
+            'range': 6,
+            'firstLike': True,
+        }
         self._next_exec = []
         self._delay = [35, 55]
         self._limit = 0
@@ -66,7 +76,7 @@ class BaseTask:
 
     def setNextExec(self):
         currentDelay = random.randint(self._delay[0], self._delay[1])
-        print(self.__class__.__name__ + ' Wait: ' + str(currentDelay))
+        self.logger.log(self.__class__.__name__ + ' Wait: ' + str(currentDelay))
         self._next_exec = time.time() + currentDelay
 
     def setUserSource(self, userSource: BaseUserSource):
