@@ -76,7 +76,7 @@ class BaseTask:
 
     def setNextExec(self):
         currentDelay = random.randint(self._delay[0], self._delay[1])
-        self.logger.log(self.__class__.__name__ + ' Wait: ' + str(currentDelay))
+        self.logger.log('{} Wait: {}'.format(self.__class__.__name__, str(currentDelay)))
         self._next_exec = time.time() + currentDelay
 
     def setUserSource(self, userSource: BaseUserSource):

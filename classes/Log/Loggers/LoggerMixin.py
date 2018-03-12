@@ -4,10 +4,10 @@ from classes.Exeptions.exeptions import NotOverrideMethodExeption
 
 class LoggerMixin:
     def log(self, *args, **kwargs):
-        raise NotOverrideMethodExeption('Do not overided method: error()')
+        raise NotOverrideMethodExeption()
 
     def error(self, *args, **kwargs):
-        raise NotOverrideMethodExeption('Do not overided method: error()')
+        raise NotOverrideMethodExeption()
 
     def success(self, text):
-        raise NotOverrideMethodExeption('Do not overided method: sucess()')
+        raise NotOverrideMethodExeption()

@@ -6,13 +6,13 @@ from classes.Log.Loggers.LoggerMixin import LoggerMixin
 
 class ConsoleLogger(LoggerMixin):
     def log(self, text):
-        print(text)
+        sys.stdout.write(text + '\n')
 
     def error(self, text):
-        sys.stderr.write(bcolors.FAIL + text + bcolors.ENDC + '\n')
+        sys.stderr.write(bcolors.FAIL + text + bcolors.ENDC + "\n")
 
     def success(self, text):
-        print(bcolors.OKBLUE + text + bcolors.ENDC + '\n')
+        sys.stdout.write(bcolors.OKBLUE + text + bcolors.ENDC + "\n")
 
 class bcolors:
     HEADER = '\033[95m'

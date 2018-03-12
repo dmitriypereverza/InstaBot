@@ -4,10 +4,12 @@ import config
 from classes.Bot.Scheduler import Scheduler
 from classes.Instagram.InstaBot import InstaBot
 from classes.Source.commentTemplateList import templateListEn
+from classes.Tasks.FollowAndUnfollow import FollowAndUnfollow
 from classes.Tasks.TraditionalFollowing import TraditionalFollowing
 from classes.TextGenerator.MsgGenerator import MsgGenerator
 from classes.UserSource.UserSourceBuilder import UserSourceBuilder
 from classes.UserSource import UserSources
+from classes.UserSource import UserSourceContainer
 
 if __name__ == "__main__":
     instaBot = InstaBot(login=config.login, password=config.password)
@@ -15,12 +17,12 @@ if __name__ == "__main__":
     scheduler = Scheduler()
 
     scheduler.addTask(
-        TraditionalFollowing(instaBot)
-            .setDelay(45, 55)
+        FollowAndUnfollow(instaBot)
+            .setDelay(80, 100)
             .setUserSource(
                 UserSourceBuilder() \
-                    .setType('hashTag') \
-                    .setSource(['draw', 'paint'], UserSources.LIST_TYPE) \
+                    .setType(UserSourceContainer.USER_LIST) \
+                    .setSource(['urgantcom'], UserSources.LIST_TYPE) \
                     .setIsCycle(True)
                     .get()
         ).setLikeSettings({

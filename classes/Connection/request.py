@@ -39,7 +39,7 @@ class RequestFacade(RequestHandlerMixin):
     def get(self, *args, **kwargs):
         response = self.session.get(*args, **kwargs)
         if response.status_code != 200:
-            self.logger.error('Can\'t do get request. Status code: {}'.format(response.status_code))
+            self.logger.error('Can\'t do get request. Status code: {}\nError text: {}'.format(response.status_code, json.loads(response.text)['message']))
         return response
 
     def headersUpdate(self, *args, **kwargs):
@@ -48,7 +48,7 @@ class RequestFacade(RequestHandlerMixin):
     def post(self, *args, **kwargs):
         response = self.session.post(*args, **kwargs)
         if response.status_code != 200:
-            self.logger.error('Can\'t do post request. Status code: {}'.format(response.status_code))
+            self.logger.error('Can\'t do post request. Status code: {}\nError text: {}'.format(response.status_code, json.loads(response.text)['message']))
         return response
 
     def getJson(self, url):

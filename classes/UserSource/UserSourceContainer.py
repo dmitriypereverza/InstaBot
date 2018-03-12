@@ -3,13 +3,18 @@
 from classes.UserSource.UserSources import UserList, \
     HashTagUserSource, GeoUserSource, FollowersUserSource
 
+FOLLOWERS = 'followers'
+GEO = 'geo'
+HASH_TAG = 'hashTag'
+USER_LIST = 'user_list'
+
 class UserSourceContainer:
     def __init__(self):
         self._sourceConainer = {
-            'user_list': UserList,
-            'hashTag': HashTagUserSource,
-            'geo': GeoUserSource,
-            'followers': FollowersUserSource,
+            USER_LIST: UserList,
+            HASH_TAG: HashTagUserSource,
+            GEO: GeoUserSource,
+            FOLLOWERS: FollowersUserSource,
         }
 
     def getUserSource(self, type):

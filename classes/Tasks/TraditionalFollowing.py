@@ -63,7 +63,7 @@ class TraditionalFollowing(BaseTask):
         if countMedia < lastMediaRange:
             lastMediaRange = countMedia
         likeListId = []
-        minLikeMediaNumber = 1
+        minLikeMediaNumber = 0
         if like_first:
             likeListId.append(currentUser.media[minLikeMediaNumber]['id'])
             minLikeMediaNumber += 1
