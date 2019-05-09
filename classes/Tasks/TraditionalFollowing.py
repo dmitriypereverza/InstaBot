@@ -45,7 +45,7 @@ class TraditionalFollowing(BaseTask):
 
                 if self.needComment():
                     self._insta.comment(
-                        user.media[0]['id'],
+                        user.media[0]['node']['id'],
                         self.getCommentGenerator().generate()
                     )
 
@@ -65,13 +65,13 @@ class TraditionalFollowing(BaseTask):
         likeListId = []
         minLikeMediaNumber = 0
         if like_first:
-            likeListId.append(currentUser.media[minLikeMediaNumber]['id'])
+            likeListId.append(currentUser.media[minLikeMediaNumber]['node']['id'])
             minLikeMediaNumber += 1
         if (lastMediaRange - minLikeMediaNumber) < likeCount:
             likeCount = lastMediaRange - minLikeMediaNumber
         if lastMediaRange == 1 and not like_first:
-            likeListId.append(currentUser.media[1]['id'])
+            likeListId.append(currentUser.media[1]['node']['id'])
         else:
             for number in sample(range(minLikeMediaNumber, lastMediaRange), likeCount):
-                likeListId.append(currentUser.media[number]['id'])
+                likeListId.append(currentUser.media[number]['node']['id'])
         return likeListId

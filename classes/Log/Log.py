@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from PyQt5.QtWidgets import QTextEdit
 from classes.DecoHelpers.classDecorators import singleton
 from classes.Log.Loggers.ConsoleLogger import ConsoleLogger
 from classes.Log.Loggers.LoggerMixin import LoggerMixin

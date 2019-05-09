@@ -17,20 +17,20 @@ if __name__ == "__main__":
     scheduler = Scheduler()
 
     scheduler.addTask(
-        FollowAndUnfollow(instaBot)
-            .setDelay(80, 100)
+        TraditionalFollowing(instaBot)
+            .setDelay(45, 55)
             .setUserSource(
-                UserSourceBuilder() \
-                    .setType(UserSourceContainer.USER_LIST) \
-                    .setSource(['urgantcom'], UserSources.LIST_TYPE) \
-                    .setIsCycle(True)
-                    .get()
+            UserSourceBuilder() \
+                .setType('hashTag') \
+                .setSource(['draw', 'paint'], UserSources.LIST_TYPE) \
+                .setIsCycle(True)
+                .get()
         ).setLikeSettings({
-                'needLike': True,
-                'count': 2,
-                'range': 6,
-                'firstLike': True,
-            })
+            'needLike': True,
+            'count': 2,
+            'range': 6,
+            'firstLike': True,
+        })
             .needFollow(True)
             .needComment(True)
             .setCommentGenerator(MsgGenerator(templateListEn, type=MsgGenerator.TYPE_LIST))

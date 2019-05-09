@@ -109,7 +109,7 @@ class InstaBot:
         return response['data']['user']['edge_followed_by']['edges']
 
     def getUserInfoByLogin(self, userName):
-        return self.requestManager.getJson(Endpoints.urlUserDetail % userName)['user']
+        return self.requestManager.getJson(Endpoints.urlUserDetail % userName)['graphql']['user']
 
     def getUsersByTags(self, tags):
         userList = []
